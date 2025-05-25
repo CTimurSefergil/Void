@@ -15,6 +15,6 @@ fn spawn_camera(mut commands: Commands) {
         },
         IsDefaultUiCamera,
         ClusterConfig::Single,
-        Player
+        Player,
     ));
 }
