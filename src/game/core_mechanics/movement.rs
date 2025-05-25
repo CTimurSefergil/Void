@@ -6,11 +6,13 @@ use bevy::{
 
 use crate::game::spawn::player::Player;
 
+const MOVEMENT_SPEED: f32 = 31.0;
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            player_movement,
+            player_movement.after(player_look),
             player_look,
             focus_event,
             toggle_grab.run_if(input_just_released(KeyCode::Escape)),
@@ -22,7 +24,33 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Event, Deref)]
 struct GrabEvent(bool);
 
-fn player_movement() {}
+fn player_movement(
+    mut player: Single<&mut Transform, With<Player>>,
+    input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+) {
+    let mut intent = Vec3::ZERO;
+    if input.pressed(KeyCode::KeyW) || input.pressed(KeyCode::ArrowUp) {
+        intent.z += 1.0;
+    }
+    if input.pressed(KeyCode::KeyS) || input.pressed(KeyCode::ArrowDown) {
+        intent.z -= 1.0;
+    }
+    if input.pressed(KeyCode::KeyA) || input.pressed(KeyCode::ArrowLeft) {
+        intent.x -= 1.0;
+    }
+    if input.pressed(KeyCode::KeyD) || input.pressed(KeyCode::ArrowRight) {
+        intent.x += 1.0;
+    }
+
+    // AŞAĞIDAKİ 4 SATIR OLMADIĞI MÜDDETÇE BAKTIĞI YÖNE DOĞRU GİTMİYOR, NEDEN ???
+    let forward = player.forward().as_vec3() * intent.z;
+    let right = player.right().as_vec3() * intent.x;
+    let mut to_move = forward + right;
+    to_move.y = 0.0;
+
+    player.translation += to_move.normalize_or_zero() * time.delta_secs() * MOVEMENT_SPEED;
+}
 
 fn player_look(
     mut player: Single<&mut Transform, With<Player>>,
