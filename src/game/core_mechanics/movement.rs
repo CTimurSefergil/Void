@@ -1,6 +1,7 @@
 use bevy::{
     input::{common_conditions::input_just_released, mouse::AccumulatedMouseMotion},
     prelude::*,
+    render::camera,
     window::PrimaryWindow,
 };
 
@@ -12,8 +13,9 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            player_movement.after(player_look),
-            player_look,
+            player_movement, //.after(player_look),
+            //player_look,
+            //camera_look,
             focus_event,
             toggle_grab.run_if(input_just_released(KeyCode::Escape)),
         ),
@@ -72,6 +74,28 @@ fn player_look(
     pitch = pitch.clamp(-1.57, 1.57);
 
     player.rotation = Quat::from_euler(YXZ, yaw, pitch, 0.0);
+}
+
+fn camera_look(
+    mut camera: Single<&mut Transform, With<IsDefaultUiCamera>>,
+    mouse_motion: Res<AccumulatedMouseMotion>,
+    time: Res<Time>,
+    window: Single<&Window, With<PrimaryWindow>>,
+) {
+    if !window.focused {
+        return;
+    }
+
+    let dt = time.delta_secs();
+    let sensitivity = 1.0 * 100.0 / window.width().min(window.height());
+
+    use EulerRot::YXZ;
+    let (mut yaw, mut pitch, _) = camera.rotation.to_euler(YXZ);
+    yaw -= mouse_motion.delta.x * dt * sensitivity;
+    pitch -= mouse_motion.delta.y * dt * sensitivity;
+    pitch = pitch.clamp(-1.57, 1.57);
+
+    camera.rotation = Quat::from_euler(YXZ, yaw, pitch, 0.0);
 }
 
 fn apply_grab(grab: Trigger<GrabEvent>, mut window: Single<&mut Window, With<PrimaryWindow>>) {
