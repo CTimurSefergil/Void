@@ -1,66 +1,32 @@
+use bevy::platform::collections::HashSet;
+use rand::prelude::*;
 use std::time::Duration;
 
 use bevy::prelude::*;
 
 use crate::game::spawn::player::Player;
 
+use super::tiles_meshes_models::TileMaterials;
+use super::tiles_meshes_models::TileMeshes;
+use super::wfccore::Cell;
+use super::wfccore::TileType;
+
 const CELL_EDGE_LENGTH: i32 = 5;
-const TOTAL_CELLS_ON_EDGE: i32 = 11;
+const TOTAL_CELLS_ON_EDGE: i32 = 17;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, (create_cells, destroy_cells));
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub enum TileType {
-    Wall,
-    Tree,
-    Column,
-    Ground,
-}
-
-#[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
-pub enum Direction {
-    Front, // +Z
-    Back,  // -Z
-    Right, // +X
-    Left,  // -X
-}
-
-#[derive(Component)]
-pub struct Cell {
-    position: (f32, f32),
-    allowed_neighbors: Vec<TileType>,
-    is_collapsed: bool,
-}
-
 #[derive(Component)]
 pub struct Tile;
-
-impl Cell {
-    fn new(x: f32, z: f32, allowed_neighbors: Vec<TileType>, command: &mut Commands) {
-        command.spawn(Self {
-            position: (x, z),
-            allowed_neighbors: vec![
-                TileType::Column,
-                TileType::Ground,
-                TileType::Tree,
-                TileType::Wall,
-            ],
-            is_collapsed: false,
-        });
-    }
-
-    fn destroy(entity: Entity, command: &mut Commands) {
-        command.entity(entity).despawn();
-    }
-}
 
 fn create_cells(
     mut command: Commands,
     player_pos: Single<&Transform, With<Player>>,
-    mut mesh_assets: ResMut<Assets<Mesh>>,
-    mut material_assets: ResMut<Assets<StandardMaterial>>,
+    tile_meshes: Res<TileMeshes>,
+    tile_materials: Res<TileMaterials>,
+    existing_cells: Query<&Cell>,
     mut last_update: Local<Duration>,
     time: Res<Time>,
 ) {
@@ -70,38 +36,40 @@ fn create_cells(
     }
     *last_update = now;
 
-    let ball_mesh = mesh_assets.add(Sphere::new(1.0));
-    let color = Color::WHITE;
-    let ball_material = material_assets.add(StandardMaterial {
-        base_color: color,
-        ..Default::default()
-    });
+    let player_grid_x = (player_pos.translation.x / CELL_EDGE_LENGTH as f32).round() as i32;
+    let player_grid_z = (player_pos.translation.z / CELL_EDGE_LENGTH as f32).round() as i32;
 
-    for x in 0..TOTAL_CELLS_ON_EDGE {
-        for z in 0..TOTAL_CELLS_ON_EDGE {
-            let (x, z) = grid_to_world(x, z);
-            let (x, z) = (
-                (((player_pos.translation.x
-                    + ((TOTAL_CELLS_ON_EDGE as f32 - 1.0) / 2.0) * CELL_EDGE_LENGTH as f32)
-                    - x)
-                    / CELL_EDGE_LENGTH as f32)
-                    .round()
-                    * CELL_EDGE_LENGTH as f32,
-                (((player_pos.translation.z
-                    + ((TOTAL_CELLS_ON_EDGE as f32 - 1.0) / 2.0) * CELL_EDGE_LENGTH as f32)
-                    - z)
-                    / CELL_EDGE_LENGTH as f32)
-                    .round()
-                    * CELL_EDGE_LENGTH as f32,
-            );
+    // BURASI ÇOK TAŞAKLI
+    let existing_positions: HashSet<(i32, i32)> = existing_cells
+        .iter()
+        .map(|cell| {
+            let grid_x = (cell.position.0 / CELL_EDGE_LENGTH as f32).round() as i32;
+            let grid_z = (cell.position.1 / CELL_EDGE_LENGTH as f32).round() as i32;
+            (grid_x, grid_z)
+        })
+        .collect();
 
-            Cell::new(x, z, vec![TileType::Ground], &mut command);
-            command.spawn((
-                Transform::from_translation(Vec3::new(x, 0.0, z)),
-                Mesh3d(ball_mesh.clone()),
-                MeshMaterial3d(ball_material.clone()),
-                Tile,
-            ));
+    let half_size = TOTAL_CELLS_ON_EDGE / 2;
+
+    for grid_x in (player_grid_x - half_size)..(player_grid_x + half_size) {
+        for grid_z in (player_grid_z - half_size)..(player_grid_z + half_size) {
+            if !existing_positions.contains(&(grid_x, grid_z)) {
+                let world_x = grid_x as f32 * CELL_EDGE_LENGTH as f32;
+                let world_z = grid_z as f32 * CELL_EDGE_LENGTH as f32;
+
+                command.spawn((
+                    Cell {
+                        position: (world_x, world_z),
+                        allowed_neighbors: HashSet::from([TileType::Ground]),
+                        is_collapsed: false,
+                        tile_type: None,
+                    },
+                    Transform::from_translation(Vec3::new(world_x, 0.0, world_z)),
+                    Mesh3d(tile_meshes.sphere.clone()),
+                    MeshMaterial3d(tile_materials.white.clone()),
+                    Tile,
+                ));
+            }
         }
     }
 }
@@ -110,7 +78,6 @@ fn destroy_cells(
     mut command: Commands,
     player_pos: Single<&Transform, With<Player>>,
     cells: Query<(Entity, &Transform), With<Cell>>,
-    tiles: Query<(Entity, &Transform), With<Tile>>,
     mut last_update: Local<Duration>,
     time: Res<Time>,
 ) {
@@ -120,19 +87,11 @@ fn destroy_cells(
     }
     *last_update = now;
 
-    for (cell, pos) in cells.iter() {
-        if player_pos.translation.distance(pos.translation) > 40.0 {
-            command.entity(cell).despawn();
+    let despawn_distance = (TOTAL_CELLS_ON_EDGE as f32 * CELL_EDGE_LENGTH as f32) * 0.75;
+
+    for (entity, transform) in cells.iter() {
+        if player_pos.translation.distance(transform.translation) > despawn_distance {
+            command.entity(entity).despawn();
         }
     }
-
-    for (tile, pos) in tiles.iter() {
-        if player_pos.translation.distance(pos.translation) > 40.0 {
-            command.entity(tile).despawn();
-        }
-    }
-}
-
-fn grid_to_world(x: i32, z: i32) -> (f32, f32) {
-    ((x * CELL_EDGE_LENGTH) as f32, (z * CELL_EDGE_LENGTH) as f32)
 }
