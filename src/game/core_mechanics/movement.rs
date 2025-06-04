@@ -1,7 +1,6 @@
 use bevy::{
     input::{common_conditions::input_just_released, mouse::AccumulatedMouseMotion},
     prelude::*,
-    render::camera,
     window::PrimaryWindow,
 };
 

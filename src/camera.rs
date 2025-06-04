@@ -31,15 +31,14 @@ fn spawn_camera(mut commands: Commands) {
 fn update_camera(
     mut camera: Single<&mut Transform, (With<Camera3d>, Without<Player>)>,
     player: Single<&Transform, (With<Player>, Without<Camera3d>)>,
-    time: Res<Time>,
 ) {
     //let Vec3 { x, y, z } = player.translation;
     //let direction = Vec3::new(x, camera.translation.y, z);
 
     camera.translation = Transform::from_translation(Vec3 {
         x: player.translation.x,
-        y: 80.0,
-        z: player.translation.z + 60.0,
+        y: 100.0,
+        z: player.translation.z + 80.0,
     })
     .translation;
     //        .lerp(direction, time.delta_secs() * 2.0);
