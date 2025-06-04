@@ -1,0 +1,110 @@
+use bevy::{ecs::resource::Resource, platform::collections::HashMap};
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum TileType {
+    Wall,
+    Tree,
+    Column,
+    Ground,
+}
+
+#[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
+pub enum Direction {
+    Front,
+    Back,
+    Right,
+    Left,
+}
+
+const _DIRECTIONS: [Direction; 4] = [
+    Direction::Front,
+    Direction::Back,
+    Direction::Right,
+    Direction::Left,
+];
+
+pub const DIRECTION_VECTORS: [(Direction, (i32, i32)); 4] = [
+    (Direction::Front, (0, 1)),
+    (Direction::Back, (0, -1)),
+    (Direction::Right, (1, 0)),
+    (Direction::Left, (-1, 0)),
+];
+
+#[derive(Resource, Debug)]
+pub struct WFCRules {
+    pub allowed_neighbors: HashMap<TileType, HashMap<Direction, Vec<TileType>>>,
+    pub all_tiles: Vec<TileType>,
+    pub weights: HashMap<TileType, f32>,
+}
+
+impl Default for WFCRules {
+    fn default() -> Self {
+        let mut allowed_neighbors = HashMap::new();
+        let mut rules_map = HashMap::new();
+
+        rules_map.insert(
+            Direction::Front,
+            vec![
+                TileType::Wall,
+                TileType::Tree,
+                TileType::Column,
+                TileType::Ground,
+            ],
+        );
+        rules_map.insert(
+            Direction::Back,
+            vec![
+                TileType::Wall,
+                TileType::Tree,
+                TileType::Column,
+                TileType::Ground,
+            ],
+        );
+        rules_map.insert(
+            Direction::Right,
+            vec![
+                TileType::Wall,
+                TileType::Tree,
+                TileType::Column,
+                TileType::Ground,
+            ],
+        );
+        rules_map.insert(
+            Direction::Left,
+            vec![
+                TileType::Wall,
+                TileType::Tree,
+                TileType::Column,
+                TileType::Ground,
+            ],
+        );
+        allowed_neighbors.insert(TileType::Ground, rules_map.clone());
+
+        rules_map.clear();
+        rules_map.insert(Direction::Front, vec![TileType::Ground]);
+        rules_map.insert(Direction::Back, vec![TileType::Ground]);
+        rules_map.insert(Direction::Right, vec![TileType::Ground]);
+        rules_map.insert(Direction::Left, vec![TileType::Ground]);
+
+        allowed_neighbors.insert(TileType::Wall, rules_map.clone());
+        allowed_neighbors.insert(TileType::Tree, rules_map.clone());
+        allowed_neighbors.insert(TileType::Column, rules_map.clone());
+
+        let mut weights = HashMap::new();
+        weights.insert(TileType::Ground, 0.7);
+        weights.insert(TileType::Wall, 0.1);
+        weights.insert(TileType::Tree, 0.15);
+        weights.insert(TileType::Column, 0.05);
+
+        WFCRules {
+            allowed_neighbors,
+            all_tiles: vec![
+                TileType::Ground,
+                TileType::Wall,
+                TileType::Tree,
+                TileType::Column,
+            ],
+            weights,
+        }
+    }
+}
