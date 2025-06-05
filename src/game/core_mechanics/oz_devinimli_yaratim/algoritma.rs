@@ -3,9 +3,9 @@ use std::{collections::HashSet, time::Duration};
 
 use crate::game::spawn::player::Player;
 
+use super::odycore::Cell;
+use super::odyrules::*;
 use super::tiles_meshes_models::{TileMaterials, TileMeshes};
-use super::wfccore::Cell;
-use super::wfcrules::*;
 
 const UPDATE_INTERVAL_MS: u64 = 200;
 const DESPAWN_INTERVAL_MS: u64 = 1000;
@@ -21,8 +21,8 @@ impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
             cell_edge_length: 5,
-            total_cells_on_edge: 13,
-            spawn_distance: 0.75,
+            total_cells_on_edge: 15,
+            spawn_distance: 1.0,
         }
     }
 }
@@ -95,6 +95,8 @@ fn create_cells(
     }
 }
 
+
+// BU FONKSİYON SPATİAL İNDEX İLE İLİŞKİLİNDİRİLMELİ Mİ ARAŞTIR
 fn destroy_cells(
     mut commands: Commands,
     player_pos: Single<&Transform, With<Player>>,
