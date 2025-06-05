@@ -20,9 +20,9 @@ pub struct GenerationSettings {
 impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
-            cell_edge_length: 5,
-            total_cells_on_edge: 15,
-            spawn_distance: 1.0,
+            cell_edge_length: 9,
+            total_cells_on_edge: 13,
+            spawn_distance: 0.7,
         }
     }
 }
@@ -132,8 +132,8 @@ fn update_tile_visuals(
             let (mesh, material) = match tile_type {
                 TileType::Ground => (&tile_meshes.ground, &tile_materials.ground),
                 TileType::Wall => (&tile_meshes.wall, &tile_materials.wall),
-                TileType::Tree => (&tile_meshes.tree, &tile_materials.tree),
-                TileType::Column => (&tile_meshes.column, &tile_materials.column),
+                TileType::Corner => (&tile_meshes.corner, &tile_materials.corner),
+                TileType::Chest => (&tile_meshes.chest, &tile_materials.chest),
             };
 
             commands

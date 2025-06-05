@@ -8,8 +8,8 @@ pub(super) fn plugin(app: &mut App) {
 pub struct TileMeshes {
     pub ground: Handle<Mesh>,
     pub wall: Handle<Mesh>,
-    pub tree: Handle<Mesh>,
-    pub column: Handle<Mesh>,
+    pub corner: Handle<Mesh>,
+    pub chest: Handle<Mesh>,
     pub placeholder: Handle<Mesh>,
 }
 
@@ -17,8 +17,8 @@ pub struct TileMeshes {
 pub struct TileMaterials {
     pub ground: Handle<StandardMaterial>,
     pub wall: Handle<StandardMaterial>,
-    pub tree: Handle<StandardMaterial>,
-    pub column: Handle<StandardMaterial>,
+    pub corner: Handle<StandardMaterial>,
+    pub chest: Handle<StandardMaterial>,
     pub placeholder: Handle<StandardMaterial>,
 }
 
@@ -27,29 +27,36 @@ fn setup_tile_resources(
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut material_assets: ResMut<Assets<StandardMaterial>>,
 ) {
+    let ground_mesh = mesh_assets.add(Mesh::from(Cuboid::new(5.0, 0.1, 5.0)));
+    let wall_mesh = mesh_assets.add(Mesh::from(Cuboid::new(4.8, 5.0, 4.8)));
+    let corner_mesh = mesh_assets.add(Mesh::from(Cuboid::new(4.8, 5.0, 4.8)));
+    let chest_mesh = mesh_assets.add(Mesh::from(Cuboid::new(1.5, 0.8, 1.0)));
+    let placeholder_mesh = mesh_assets.add(Mesh::from(Cuboid::new(1.0, 1.0, 1.0)));
+
     let tile_meshes = TileMeshes {
-        ground: mesh_assets.add(Cylinder::new(0.8, 3.0)),
-        wall: mesh_assets.add(Cylinder::new(0.8, 3.0)),
-        tree: mesh_assets.add(Cylinder::new(0.8, 3.0)),
-        column: mesh_assets.add(Cylinder::new(0.8, 3.0)),
-        placeholder: mesh_assets.add(Circle::new(1.0)),
+        ground: ground_mesh,
+        wall: wall_mesh,
+        corner: corner_mesh,
+        chest: chest_mesh,
+        placeholder: placeholder_mesh,
     };
 
     let tile_materials = TileMaterials {
         ground: material_assets.add(StandardMaterial {
-            base_color: Color::BLACK,
-            ..Default::default()
-        }),
-        tree: material_assets.add(StandardMaterial {
-            base_color: Color::srgb(0.3, 0.7, 0.2),
+            base_color: Color::srgb(0.0, 0.5, 0.0),
             ..Default::default()
         }),
         wall: material_assets.add(StandardMaterial {
-            base_color: Color::srgb(0.4, 0.2, 0.1),
+            base_color: Color::srgb(0.5, 0.5, 0.5),
             ..Default::default()
         }),
-        column: material_assets.add(StandardMaterial {
-            base_color: Color::srgb(0.6, 0.6, 0.6),
+        corner: material_assets.add(StandardMaterial {
+            base_color: Color::srgb(0.5, 0.3, 0.1),
+            ..Default::default()
+        }),
+        chest: material_assets.add(StandardMaterial {
+            base_color: Color::srgb(1.0, 0.843, 0.0),
+            metallic: 0.8,
             ..Default::default()
         }),
         placeholder: material_assets.add(StandardMaterial {
