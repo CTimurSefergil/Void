@@ -44,39 +44,19 @@ impl Default for WFCRules {
 
         rules_map.insert(
             Direction::Front,
-            vec![
-                TileType::Wall,
-                TileType::Tree,
-                TileType::Column,
-                TileType::Ground,
-            ],
+            vec![TileType::Wall, TileType::Tree, TileType::Column],
         );
         rules_map.insert(
             Direction::Back,
-            vec![
-                TileType::Wall,
-                TileType::Tree,
-                TileType::Column,
-                TileType::Ground,
-            ],
+            vec![TileType::Wall, TileType::Tree, TileType::Column],
         );
         rules_map.insert(
             Direction::Right,
-            vec![
-                TileType::Wall,
-                TileType::Tree,
-                TileType::Column,
-                TileType::Ground,
-            ],
+            vec![TileType::Wall, TileType::Tree, TileType::Column],
         );
         rules_map.insert(
             Direction::Left,
-            vec![
-                TileType::Wall,
-                TileType::Tree,
-                TileType::Column,
-                TileType::Ground,
-            ],
+            vec![TileType::Wall, TileType::Tree, TileType::Column],
         );
         allowed_neighbors.insert(TileType::Ground, rules_map.clone());
 

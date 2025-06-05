@@ -14,7 +14,13 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
             x: 0.0,
             y: 0.0,
             z: 0.0,
+        })
+        .with_scale(Vec3 {
+            x: 5.0,
+            y: 5.0,
+            z: 5.0,
         }),
         Player,
+        SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/truck-green.glb"))),
     ));
 }

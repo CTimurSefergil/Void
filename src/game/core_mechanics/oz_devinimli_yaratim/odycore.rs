@@ -2,7 +2,7 @@ use bevy::{platform::collections::HashSet, prelude::*};
 use rand::seq::IteratorRandom;
 use std::collections::{HashMap, VecDeque};
 
-use super::wfcrules::*;
+use super::odyrules::*;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<WFCRules>()
@@ -89,7 +89,7 @@ fn filter_valid_tiles(
 fn update_spatial_index(
     mut spatial_index: ResMut<CellSpatialIndex>,
     added_cells: Query<(Entity, &Cell), Added<Cell>>,
-    mut removed_cells: RemovedComponents<Cell>,
+    mut removed_cells: RemovedComponents<Cell>
 ) {
     for (entity, cell) in added_cells.iter() {
         spatial_index.grid.insert(cell.position, entity);
@@ -129,7 +129,6 @@ fn propagate_constraints(
             }
         };
 
-        // CASE 1: Cell is collapsed - propagate to neighbors
         if is_collapsed {
             if let Some(tile) = tile_type {
                 for (direction, (dx, dz)) in DIRECTION_VECTORS.iter() {
@@ -163,7 +162,6 @@ fn propagate_constraints(
                 }
             }
         }
-        // CASE 2: Cell is new - initialize from neighbors
         else {
             let mut new_valid_tiles = valid_tiles;
             let mut changed = false;
@@ -273,13 +271,14 @@ fn initialize_new_cells(
 
 fn get_random_tile(rules: &WFCRules, valid_tiles: &[TileType]) -> TileType {
     use rand::prelude::*;
-    
+
     if valid_tiles.is_empty() {
         return TileType::Ground;
     }
 
     let mut rng = rand::rng();
-    let total_weight: f32 = valid_tiles.iter()
+    let total_weight: f32 = valid_tiles
+        .iter()
         .map(|t| *rules.weights.get(t).unwrap_or(&1.0))
         .sum();
 

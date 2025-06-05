@@ -1,1 +1,2 @@
 Movement -> player_movement() -> Neden move_to kullanıldığını anlamadım.
+Çapraz hareketlerde bazen hücre geç çöküyor.
