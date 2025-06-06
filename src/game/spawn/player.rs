@@ -21,6 +21,6 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
             z: 5.0,
         }),
         Player,
-        //SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/truck-green.glb"))),
+        SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/truck-green.glb"))),
     ));
 }

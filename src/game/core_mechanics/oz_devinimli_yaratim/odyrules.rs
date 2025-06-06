@@ -1,4 +1,4 @@
-use bevy::{ecs::resource::Resource, platform::collections::HashMap};
+use bevy::{ecs::{component::Component, resource::Resource}, platform::collections::HashMap};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum TileType {
@@ -7,6 +7,14 @@ pub enum TileType {
     Corner,
     Chest,
 }
+#[derive(Component)]
+pub struct Ground;
+#[derive(Component)]
+pub struct Wall;
+#[derive(Component)]
+pub struct Corner;
+#[derive(Component)]
+pub struct Chest;
 
 #[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
 pub enum Direction {
@@ -42,10 +50,22 @@ impl Default for ODYRules {
         let mut allowed_neighbors = HashMap::new();
         let mut rules_map = HashMap::new();
 
-        rules_map.insert(Direction::Front, vec![TileType::Ground, TileType::Chest, TileType::Corner]);
-        rules_map.insert(Direction::Back, vec![TileType::Ground, TileType::Chest, TileType::Corner]);
-        rules_map.insert(Direction::Right, vec![TileType::Ground, TileType::Chest, TileType::Corner]);
-        rules_map.insert(Direction::Left, vec![TileType::Ground, TileType::Chest, TileType::Corner]);
+        rules_map.insert(
+            Direction::Front,
+            vec![TileType::Ground, TileType::Chest, TileType::Corner],
+        );
+        rules_map.insert(
+            Direction::Back,
+            vec![TileType::Ground, TileType::Chest, TileType::Corner],
+        );
+        rules_map.insert(
+            Direction::Right,
+            vec![TileType::Ground, TileType::Chest, TileType::Corner],
+        );
+        rules_map.insert(
+            Direction::Left,
+            vec![TileType::Ground, TileType::Chest, TileType::Corner],
+        );
         allowed_neighbors.insert(TileType::Ground, rules_map.clone());
 
         rules_map.clear();
@@ -54,7 +74,7 @@ impl Default for ODYRules {
         rules_map.insert(Direction::Right, vec![TileType::Ground]);
         rules_map.insert(Direction::Left, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::Wall, rules_map.clone());
-        
+
         rules_map.clear();
         rules_map.insert(Direction::Front, vec![TileType::Ground, TileType::Corner]);
         rules_map.insert(Direction::Back, vec![TileType::Ground, TileType::Corner]);

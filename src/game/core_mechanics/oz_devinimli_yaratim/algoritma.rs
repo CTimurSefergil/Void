@@ -21,7 +21,7 @@ impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
             cell_edge_length: 9,
-            total_cells_on_edge: 13,
+            total_cells_on_edge: 19,
             spawn_distance: 0.7,
         }
     }
@@ -127,16 +127,28 @@ fn update_tile_visuals(
 ) {
     for (entity, cell) in changed_cells.iter() {
         if let Some(tile_type) = cell.tile_type {
-            let (mesh, material) = match tile_type {
-                TileType::Ground => (&tile_meshes.ground, &tile_materials.ground),
-                TileType::Wall => (&tile_meshes.wall, &tile_materials.wall),
-                TileType::Corner => (&tile_meshes.corner, &tile_materials.corner),
-                TileType::Chest => (&tile_meshes.chest, &tile_materials.chest),
+            match tile_type {
+                TileType::Ground => {
+                    commands
+                    .entity(entity)
+                    .insert((Mesh3d(tile_meshes.ground.clone()), MeshMaterial3d(tile_materials.ground.clone()), Ground));
+                },
+                TileType::Wall => {
+                    commands
+                    .entity(entity)
+                    .insert((Mesh3d(tile_meshes.wall.clone()), MeshMaterial3d(tile_materials.wall.clone()), Wall));
+                },
+                TileType::Corner => {
+                    commands
+                    .entity(entity)
+                    .insert((Mesh3d(tile_meshes.corner.clone()), MeshMaterial3d(tile_materials.corner.clone()), Corner));
+                },
+                TileType::Chest => {
+                    commands
+                    .entity(entity)
+                    .insert((Mesh3d(tile_meshes.chest.clone()), MeshMaterial3d(tile_materials.chest.clone()), Chest));
+                },
             };
-
-            commands
-                .entity(entity)
-                .insert((Mesh3d(mesh.clone()), MeshMaterial3d(material.clone())));
         }
     }
 }
