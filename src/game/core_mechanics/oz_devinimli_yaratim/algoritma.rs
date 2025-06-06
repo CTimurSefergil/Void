@@ -28,7 +28,7 @@ impl Default for GenerationSettings {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<WFCRules>()
+    app.init_resource::<ODYRules>()
         .init_resource::<GenerationSettings>()
         .add_systems(Update, (create_cells, destroy_cells, update_tile_visuals));
 }
@@ -44,7 +44,7 @@ fn create_cells(
     existing_cells: Query<&Transform, With<Cell>>,
     mut last_update: Local<Duration>,
     time: Res<Time>,
-    wfc_rules: Res<WFCRules>,
+    wfc_rules: Res<ODYRules>,
     settings: Res<GenerationSettings>,
 ) {
     let now = time.elapsed();
@@ -95,8 +95,6 @@ fn create_cells(
     }
 }
 
-
-// BU FONKSİYON SPATİAL İNDEX İLE İLİŞKİLİNDİRİLMELİ Mİ ARAŞTIR
 fn destroy_cells(
     mut commands: Commands,
     player_pos: Single<&Transform, With<Player>>,
