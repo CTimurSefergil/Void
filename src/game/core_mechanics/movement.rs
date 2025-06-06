@@ -12,9 +12,8 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            player_movement, //.after(player_look),
-            //player_look,
-            //camera_look,
+            player_movement.after(player_look),
+            player_look,
             focus_event,
             toggle_grab.run_if(input_just_released(KeyCode::Escape)),
         ),

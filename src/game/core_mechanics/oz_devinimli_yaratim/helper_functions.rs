@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::{Direction, TileType, ODYRules};
+use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::{Direction, ODYRules, TileType};
 
 pub fn filter_valid_tiles(
     valid_tiles: &mut Vec<TileType>,

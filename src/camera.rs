@@ -7,7 +7,7 @@ use crate::game::spawn::player::Player;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_camera)
-        .add_systems(Update, update_camera);
+        .add_systems(Update, (update_camera, camera_look));
 }
 
 fn spawn_camera(mut commands: Commands) {
@@ -17,12 +17,7 @@ fn spawn_camera(mut commands: Commands) {
         Camera3d {
             ..Default::default()
         },
-        Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)).with_rotation(Quat::from_euler(
-            EulerRot::XYZ,
-            -45.0,
-            0.0,
-            0.0,
-        )),
+        Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
         IsDefaultUiCamera,
         ClusterConfig::Single,
     ));
@@ -31,17 +26,18 @@ fn spawn_camera(mut commands: Commands) {
 fn update_camera(
     mut camera: Single<&mut Transform, (With<Camera3d>, Without<Player>)>,
     player: Single<&Transform, (With<Player>, Without<Camera3d>)>,
+    time: Res<Time>,
 ) {
-    //let Vec3 { x, y, z } = player.translation;
-    //let direction = Vec3::new(x, camera.translation.y, z);
+    let Vec3 { x, y: _, z } = player.translation;
+    let direction = Vec3::new(x, camera.translation.y, z);
 
     camera.translation = Transform::from_translation(Vec3 {
         x: player.translation.x,
-        y: 100.0,
-        z: player.translation.z + 80.0,
+        y: player.translation.y + 2.0,
+        z: player.translation.z,
     })
-    .translation;
-    //        .lerp(direction, time.delta_secs() * 2.0);
+    .translation
+    .lerp(direction, time.delta_secs() * 2.0);
 }
 
 fn camera_look(
