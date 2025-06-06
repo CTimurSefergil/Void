@@ -7,7 +7,7 @@ use crate::game::core_mechanics::oz_devinimli_yaratim::helper_functions::{filter
 use super::odyrules::*;
 
 pub fn plugin(app: &mut App) {
-    app.init_resource::<WFCRules>()
+    app.init_resource::<ODYRules>()
         .init_resource::<CellSpatialIndex>()
         .init_resource::<PropagationQueue>()
         .add_systems(Startup, setup_wfc_rules)
@@ -24,7 +24,7 @@ pub fn plugin(app: &mut App) {
 }
 
 fn setup_wfc_rules(mut commands: Commands) {
-    commands.insert_resource(WFCRules::default());
+    commands.insert_resource(ODYRules::default());
     commands.insert_resource(CellSpatialIndex::default());
     commands.insert_resource(PropagationQueue::default());
 }
@@ -71,6 +71,21 @@ fn update_spatial_index(
     added_cells: Query<(Entity, &Cell), Added<Cell>>,
     mut removed_cells: RemovedComponents<Cell>
 ) {
+    // PSEUDO CODE for update_spatial_index function:
+    
+    // 1. Handle newly added cells:
+    //    a. Iterate through all entities that have Cell component added this frame
+    //    b. For each entity-cell pair:
+    //       - Insert mapping from cell's position to entity in spatial index grid
+    //       - This allows O(1) lookup of entities by their grid coordinates
+    
+    // 2. Handle removed cells:
+    //    a. Iterate through all entities that had Cell component removed this frame
+    //    b. For each removed entity:
+    //       - Remove all grid entries that map to this entity
+    //       - Use retain to filter out entries where stored entity matches removed entity
+    //       - This prevents dangling references in the spatial index
+
     for (entity, cell) in added_cells.iter() {
         spatial_index.grid.insert(cell.position, entity);
     }
@@ -82,12 +97,84 @@ fn update_spatial_index(
     }
 }
 
+fn initialize_new_cells(
+    mut wfc_queue: ResMut<PropagationQueue>,
+    added_cells: Query<Entity, Added<Cell>>,
+    spatial_index: Res<CellSpatialIndex>,
+    cells: Query<&Cell>,
+) {
+    // PSEUDO CODE for initialize_new_cells function:
+    
+    // 1. Iterate through all entities that have Cell component added this frame
+    // 2. For each newly added cell entity:
+    //    a. Get the cell component data (position, etc.)
+    //    b. If cell data retrieval fails, skip to next entity
+    //    
+    //    c. Check all neighboring positions (North, South, East, West):
+    //       - Calculate neighbor position using direction vectors
+    //       - Look up neighbor entity in spatial index using position
+    //       - If neighbor exists:
+    //         * Get neighbor's cell data
+    //         * If neighbor is collapsed (has a definite tile type):
+    //           - Add current entity to propagation queue
+    //           - Break out of neighbor checking loop (one collapsed neighbor is enough)
+    //    
+    // Purpose: When a new cell is added to the grid, if it has any collapsed neighbors,
+    // it needs to have its valid tiles constrained based on those neighbors' rules.
+    // Adding to queue triggers constraint propagation in the next system.
+    // If we didn't add them to the propagation queue, those newly added cells would not have their valid tiles updated based on the collapsed neighbors.
+    // They would remain with their initial valid tiles, which could lead to inconsistencies in the wave function collapse algorithm.
+    for entity in added_cells.iter() {
+        if let Ok(cell) = cells.get(entity) {
+            for (_, (dx, dz)) in DIRECTION_VECTORS.iter() {
+                let neighbor_pos = (cell.position.0 + dx, cell.position.1 + dz);
+                if let Some(neighbor_entity) = spatial_index.grid.get(&neighbor_pos) {
+                    if let Ok(neighbor_cell) = cells.get(*neighbor_entity) {
+                        if neighbor_cell.is_collapsed {
+                            wfc_queue.queue.push_back(entity);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 fn propagate_constraints(
     mut wfc_queue: ResMut<PropagationQueue>,
-    rules: Res<WFCRules>,
+    rules: Res<ODYRules>,
     spatial_index: Res<CellSpatialIndex>,
     mut cells: Query<&mut Cell>,
 ) {
+    // PSEUDO CODE for propagate_constraints function:
+    
+    // 1. Initialize a set to track processed entities (avoid infinite loops)
+    // 2. While there are entities in the propagation queue:
+    //    a. Pop the front entity from queue
+    //    b. Skip if already processed in this iteration
+    //    c. Mark entity as processed
+    //    
+    //    d. Extract cell data (collapsed state, tile type, position, valid tiles)
+    //    e. If entity no longer exists, continue to next
+    //    
+    //    f. If cell is collapsed:
+    //       - For each direction (North, South, East, West):
+    //         * Calculate neighbor position
+    //         * If neighbor exists and is not collapsed:
+    //           - Filter neighbor's valid tiles based on current tile's constraints
+    //           - If neighbor's valid tiles changed, add neighbor to queue
+    //           - If neighbor has contradiction (no valid tiles), reset to Ground
+    //    
+    //    g. If cell is not collapsed:
+    //       - Create copy of current valid tiles
+    //       - For each direction:
+    //         * Check if neighbor exists and is collapsed
+    //         * If so, filter current cell's valid tiles based on neighbor's constraints
+    //       - If valid tiles changed:
+    //         * Update cell's valid tiles and entropy
+    //         * If contradiction occurs, reset to Ground tile
+
     let mut processed = HashSet::new();
 
     while let Some(entity) = wfc_queue.queue.pop_front() {
@@ -187,8 +274,22 @@ fn propagate_constraints(
 fn collapse_lowest_entropy_cell(
     mut wfc_queue: ResMut<PropagationQueue>,
     mut cells: Query<(Entity, &mut Cell)>,
-    rules: Res<WFCRules>,
+    rules: Res<ODYRules>,
 ) {
+    // PSEUDO CODE for collapse_lowest_entropy_cell function:
+    
+    // 1. If propagation queue is not empty, return early (propagation has priority)
+    // 2. Collect all uncollapsed cells as candidates
+    // 3. If no candidates exist, return (all cells are collapsed)
+    // 4. Find the minimum entropy value among all candidates
+    // 5. Filter candidates to only include those with minimum entropy
+    // 6. Randomly select one candidate from the filtered list
+    // 7. If selected cell has valid tiles:
+    //    a. Choose a random tile from valid tiles using rules
+    //    b. Set cell as collapsed with chosen tile
+    //    c. Reset entropy to 0
+    //    d. Add entity to propagation queue for constraint propagation
+
     if !wfc_queue.queue.is_empty() {
         return;
     }
@@ -222,29 +323,6 @@ fn collapse_lowest_entropy_cell(
             cell.entropy = 0;
 
             wfc_queue.queue.push_back(entity);
-        }
-    }
-}
-
-fn initialize_new_cells(
-    mut wfc_queue: ResMut<PropagationQueue>,
-    added_cells: Query<Entity, Added<Cell>>,
-    spatial_index: Res<CellSpatialIndex>,
-    cells: Query<&Cell>,
-) {
-    for entity in added_cells.iter() {
-        if let Ok(cell) = cells.get(entity) {
-            for (_, (dx, dz)) in DIRECTION_VECTORS.iter() {
-                let neighbor_pos = (cell.position.0 + dx, cell.position.1 + dz);
-                if let Some(neighbor_entity) = spatial_index.grid.get(&neighbor_pos) {
-                    if let Ok(neighbor_cell) = cells.get(*neighbor_entity) {
-                        if neighbor_cell.is_collapsed {
-                            wfc_queue.queue.push_back(entity);
-                            break;
-                        }
-                    }
-                }
-            }
         }
     }
 }

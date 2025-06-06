@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::{Direction, TileType, WFCRules};
+use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::{Direction, TileType, ODYRules};
 
 pub fn filter_valid_tiles(
     valid_tiles: &mut Vec<TileType>,
     neighbor_tile: TileType,
     direction: Direction,
-    rules: &WFCRules,
+    rules: &ODYRules,
 ) {
     let opposite_direction = get_opposite_direction(direction);
 
@@ -17,7 +17,7 @@ pub fn filter_valid_tiles(
     }
 }
 
-pub fn get_random_tile(rules: &WFCRules, valid_tiles: &[TileType]) -> TileType {
+pub fn get_random_tile(rules: &ODYRules, valid_tiles: &[TileType]) -> TileType {
     use rand::prelude::*;
 
     if valid_tiles.is_empty() {
