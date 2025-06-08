@@ -12,7 +12,7 @@ fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Transform::from_translation(Vec3 {
             x: 0.0,
-            y: 0.0,
+            y: 2.0,
             z: 0.0,
         })
         .with_scale(Vec3 {
