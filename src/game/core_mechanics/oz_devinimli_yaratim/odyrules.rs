@@ -1,4 +1,7 @@
-use bevy::{ecs::{component::Component, resource::Resource}, platform::collections::HashMap};
+use bevy::{
+    ecs::{component::Component, resource::Resource},
+    platform::collections::HashMap,
+};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum TileType {
