@@ -1,5 +1,11 @@
 use bevy::prelude::*;
 
+pub const GROUND: [f32; 3] = [5.0, 0.1, 5.0];
+pub const WALL: [f32; 3] = [4.8, 5.0, 4.8];
+pub const CORNER: [f32; 3] = [4.8, 5.0, 4.8];
+pub const CHEST: [f32; 3] = [1.5, 0.8, 1.0];
+pub const PLACEHOLDER: [f32; 3] = [1.0, 1.0, 1.0];
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_tile_resources);
 }
@@ -27,11 +33,15 @@ fn setup_tile_resources(
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut material_assets: ResMut<Assets<StandardMaterial>>,
 ) {
-    let ground_mesh = mesh_assets.add(Mesh::from(Cuboid::new(5.0, 0.1, 5.0)));
-    let wall_mesh = mesh_assets.add(Mesh::from(Cuboid::new(4.8, 5.0, 4.8)));
-    let corner_mesh = mesh_assets.add(Mesh::from(Cuboid::new(4.8, 5.0, 4.8)));
-    let chest_mesh = mesh_assets.add(Mesh::from(Cuboid::new(1.5, 0.8, 1.0)));
-    let placeholder_mesh = mesh_assets.add(Mesh::from(Cuboid::new(1.0, 1.0, 1.0)));
+    let ground_mesh = mesh_assets.add(Mesh::from(Cuboid::new(GROUND[0], GROUND[1], GROUND[2])));
+    let wall_mesh = mesh_assets.add(Mesh::from(Cuboid::new(WALL[0], WALL[1], WALL[2])));
+    let corner_mesh = mesh_assets.add(Mesh::from(Cuboid::new(CORNER[0], CORNER[1], CORNER[2])));
+    let chest_mesh = mesh_assets.add(Mesh::from(Cuboid::new(CHEST[0], CHEST[1], CHEST[2])));
+    let placeholder_mesh = mesh_assets.add(Mesh::from(Cuboid::new(
+        PLACEHOLDER[0],
+        PLACEHOLDER[1],
+        PLACEHOLDER[2],
+    )));
 
     let tile_meshes = TileMeshes {
         ground: ground_mesh,

@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 use std::{collections::HashSet, time::Duration};
 
+use crate::game::core_mechanics::oz_devinimli_yaratim::tiles_meshes_models::{
+    CHEST, CORNER, GROUND, WALL,
+};
 use crate::game::spawn::player::Player;
 
 use super::odycore::Cell;
@@ -121,33 +124,65 @@ fn destroy_cells(
 
 fn update_tile_visuals(
     mut commands: Commands,
-    changed_cells: Query<(Entity, &Cell), Changed<Cell>>,
+    changed_cells: Query<(Entity, &Cell, &Transform), Changed<Cell>>,
     tile_meshes: Res<TileMeshes>,
     tile_materials: Res<TileMaterials>,
 ) {
-    for (entity, cell) in changed_cells.iter() {
+    for (entity, cell, transform) in changed_cells.iter() {
         if let Some(tile_type) = cell.tile_type {
             match tile_type {
                 TileType::Ground => {
-                    commands
-                    .entity(entity)
-                    .insert((Mesh3d(tile_meshes.ground.clone()), MeshMaterial3d(tile_materials.ground.clone()), Ground));
-                },
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        GROUND[1] / 2.0,
+                        0.0 + transform.translation.z,
+                    ));
+                    commands.entity(entity).insert((
+                        Mesh3d(tile_meshes.ground.clone()),
+                        MeshMaterial3d(tile_materials.ground.clone()),
+                        Ground,
+                        transform,
+                    ));
+                }
                 TileType::Wall => {
-                    commands
-                    .entity(entity)
-                    .insert((Mesh3d(tile_meshes.wall.clone()), MeshMaterial3d(tile_materials.wall.clone()), Wall));
-                },
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        WALL[1] / 2.0,
+                        0.0 + transform.translation.z,
+                    ));
+                    commands.entity(entity).insert((
+                        Mesh3d(tile_meshes.wall.clone()),
+                        MeshMaterial3d(tile_materials.wall.clone()),
+                        Wall,
+                        transform,
+                    ));
+                }
                 TileType::Corner => {
-                    commands
-                    .entity(entity)
-                    .insert((Mesh3d(tile_meshes.corner.clone()), MeshMaterial3d(tile_materials.corner.clone()), Corner));
-                },
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        CORNER[1] / 2.0,
+                        0.0 + transform.translation.z,
+                    ));
+                    commands.entity(entity).insert((
+                        Mesh3d(tile_meshes.corner.clone()),
+                        MeshMaterial3d(tile_materials.corner.clone()),
+                        Corner,
+                        transform,
+                    ));
+                }
                 TileType::Chest => {
-                    commands
-                    .entity(entity)
-                    .insert((Mesh3d(tile_meshes.chest.clone()), MeshMaterial3d(tile_materials.chest.clone()), Chest));
-                },
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        CHEST[1] / 2.0,
+                        0.0 + transform.translation.z,
+                    ));
+                    commands.entity(entity).insert((
+                        Mesh3d(tile_meshes.chest.clone()),
+                        MeshMaterial3d(tile_materials.chest.clone()),
+                        Chest,
+                        transform,
+                    ));
+                }
             };
         }
     }
