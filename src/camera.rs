@@ -14,7 +14,9 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn(DirectionalLight::default());
     commands.spawn((
         Name::new("Camera"),
-        Camera3d {
+        Camera3d::default(),
+        Camera {
+            clear_color: ClearColorConfig::Custom(Color::srgb(0.1, 0.1, 0.15)), // Arka plan rengi
             ..Default::default()
         },
         Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
