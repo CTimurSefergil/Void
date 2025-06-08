@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use std::{collections::HashSet, time::Duration};
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::tiles_meshes_models::{
-    CHEST, CORNER, GROUND, WALL,
+    TileModels, WALL,
 };
 use crate::game::spawn::player::Player;
 
@@ -90,8 +90,6 @@ fn create_cells(
                 Name::new(format!("Cell_{}_{}", grid_x, grid_z)),
                 cell,
                 Transform::from_translation(Vec3::new(world_x, 0.0, world_z)),
-                Mesh3d(tile_meshes.placeholder.clone()),
-                MeshMaterial3d(tile_materials.placeholder.clone()),
                 Tile,
             ));
         }
@@ -127,6 +125,8 @@ fn update_tile_visuals(
     changed_cells: Query<(Entity, &Cell, &Transform), Changed<Cell>>,
     tile_meshes: Res<TileMeshes>,
     tile_materials: Res<TileMaterials>,
+    tile_models: Res<TileModels>,
+    settings: Res<GenerationSettings>,
 ) {
     for (entity, cell, transform) in changed_cells.iter() {
         if let Some(tile_type) = cell.tile_type {
@@ -134,16 +134,20 @@ fn update_tile_visuals(
                 TileType::Ground => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x,
-                        GROUND[1] / 2.0,
+                        0.0,
                         0.0 + transform.translation.z,
-                    ));
-                    commands.entity(entity).insert((
-                        Mesh3d(tile_meshes.ground.clone()),
-                        MeshMaterial3d(tile_materials.ground.clone()),
-                        Ground,
-                        transform,
-                    ));
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.ground.clone()), Ground, transform))
+                        .remove::<MeshMaterial3d<StandardMaterial>>();
                 }
+
                 TileType::Wall => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x,
@@ -157,31 +161,39 @@ fn update_tile_visuals(
                         transform,
                     ));
                 }
+
                 TileType::Corner => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x,
-                        CORNER[1] / 2.0,
+                        0.0,
                         0.0 + transform.translation.z,
-                    ));
-                    commands.entity(entity).insert((
-                        Mesh3d(tile_meshes.corner.clone()),
-                        MeshMaterial3d(tile_materials.corner.clone()),
-                        Corner,
-                        transform,
-                    ));
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.corner.clone()), Corner, transform))
+                        .remove::<MeshMaterial3d<StandardMaterial>>();
                 }
+
                 TileType::Chest => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x,
-                        CHEST[1] / 2.0,
+                        0.0,
                         0.0 + transform.translation.z,
-                    ));
-                    commands.entity(entity).insert((
-                        Mesh3d(tile_meshes.chest.clone()),
-                        MeshMaterial3d(tile_materials.chest.clone()),
-                        Chest,
-                        transform,
-                    ));
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.chest.clone()), Chest, transform))
+                        .remove::<MeshMaterial3d<StandardMaterial>>();
                 }
             };
         }
