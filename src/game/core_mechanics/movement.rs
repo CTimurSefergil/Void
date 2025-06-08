@@ -6,7 +6,7 @@ use bevy::{
 
 use crate::game::spawn::player::Player;
 
-const MOVEMENT_SPEED: f32 = 31.0;
+const MOVEMENT_SPEED: f32 = 23.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

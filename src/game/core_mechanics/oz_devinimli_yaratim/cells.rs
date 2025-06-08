@@ -1,14 +1,11 @@
 use bevy::prelude::*;
 use std::{collections::HashSet, time::Duration};
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::tiles_meshes_models::{
-    TileModels, WALL,
-};
+use crate::game::core_mechanics::oz_devinimli_yaratim::tiles_meshes_models::{TileModels, WALL};
 use crate::game::spawn::player::Player;
 
 use super::odycore::Cell;
 use super::odyrules::*;
-use super::tiles_meshes_models::{TileMaterials, TileMeshes};
 
 const UPDATE_INTERVAL_MS: u64 = 200;
 const DESPAWN_INTERVAL_MS: u64 = 1000;
@@ -42,8 +39,6 @@ pub struct Tile;
 fn create_cells(
     mut commands: Commands,
     player_pos: Single<&Transform, With<Player>>,
-    tile_meshes: Res<TileMeshes>,
-    tile_materials: Res<TileMaterials>,
     existing_cells: Query<&Transform, With<Cell>>,
     mut last_update: Local<Duration>,
     time: Res<Time>,
@@ -123,8 +118,6 @@ fn destroy_cells(
 fn update_tile_visuals(
     mut commands: Commands,
     changed_cells: Query<(Entity, &Cell, &Transform), Changed<Cell>>,
-    tile_meshes: Res<TileMeshes>,
-    tile_materials: Res<TileMaterials>,
     tile_models: Res<TileModels>,
     settings: Res<GenerationSettings>,
 ) {
@@ -142,10 +135,11 @@ fn update_tile_visuals(
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
                     });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.ground.clone()), Ground, transform))
-                        .remove::<MeshMaterial3d<StandardMaterial>>();
+                    commands.entity(entity).insert((
+                        SceneRoot(tile_models.ground.clone()),
+                        Ground,
+                        transform,
+                    ));
                 }
 
                 TileType::Wall => {
@@ -154,12 +148,7 @@ fn update_tile_visuals(
                         WALL[1] / 2.0,
                         0.0 + transform.translation.z,
                     ));
-                    commands.entity(entity).insert((
-                        Mesh3d(tile_meshes.wall.clone()),
-                        MeshMaterial3d(tile_materials.wall.clone()),
-                        Wall,
-                        transform,
-                    ));
+                    commands.entity(entity).insert((Wall, transform));
                 }
 
                 TileType::Corner => {
@@ -173,10 +162,11 @@ fn update_tile_visuals(
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
                     });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.corner.clone()), Corner, transform))
-                        .remove::<MeshMaterial3d<StandardMaterial>>();
+                    commands.entity(entity).insert((
+                        SceneRoot(tile_models.corner.clone()),
+                        Corner,
+                        transform,
+                    ));
                 }
 
                 TileType::Chest => {
@@ -190,10 +180,11 @@ fn update_tile_visuals(
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
                     });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.chest.clone()), Chest, transform))
-                        .remove::<MeshMaterial3d<StandardMaterial>>();
+                    commands.entity(entity).insert((
+                        SceneRoot(tile_models.chest.clone()),
+                        Chest,
+                        transform,
+                    ));
                 }
             };
         }
