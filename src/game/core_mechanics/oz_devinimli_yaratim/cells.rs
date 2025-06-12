@@ -14,6 +14,8 @@ const DESPAWN_INTERVAL_MS: u64 = 1000;
 pub struct GenerationSettings {
     pub cell_edge_length: i32,
     pub total_cells_on_edge: i32,
+    #[allow(dead_code)]
+    pub total_cells_on_y_axis: i32,
     pub spawn_distance: f32,
 }
 
@@ -21,7 +23,8 @@ impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
             cell_edge_length: 9,
-            total_cells_on_edge: 19,
+            total_cells_on_edge: 17,
+            total_cells_on_y_axis: 7,
             spawn_distance: 0.7,
         }
     }

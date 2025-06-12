@@ -18,10 +18,10 @@ pub struct Chest;
 
 #[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
 pub enum Direction {
-    ZeroZeroOne,        
-    ZeroZeroMinusOne,    
-    OneZeroZero,         
-    MinusOneZeroZero,   
+    ZeroZeroOne,
+    ZeroZeroMinusOne,
+    OneZeroZero,
+    MinusOneZeroZero,
 }
 
 const _DIRECTIONS: [Direction; 4] = [
@@ -67,12 +67,24 @@ impl Default for ODYRules {
             vec![TileType::Ground, TileType::Chest, TileType::Tree],
         );
         allowed_neighbors.insert(TileType::Ground, rules_map.clone());
-        
+
         rules_map.clear();
-        rules_map.insert(Direction::ZeroZeroOne, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::ZeroZeroMinusOne, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::OneZeroZero, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::MinusOneZeroZero, vec![TileType::Ground, TileType::Tree]);
+        rules_map.insert(
+            Direction::ZeroZeroOne,
+            vec![TileType::Ground, TileType::Tree],
+        );
+        rules_map.insert(
+            Direction::ZeroZeroMinusOne,
+            vec![TileType::Ground, TileType::Tree],
+        );
+        rules_map.insert(
+            Direction::OneZeroZero,
+            vec![TileType::Ground, TileType::Tree],
+        );
+        rules_map.insert(
+            Direction::MinusOneZeroZero,
+            vec![TileType::Ground, TileType::Tree],
+        );
         allowed_neighbors.insert(TileType::Tree, rules_map.clone());
 
         rules_map.clear();
@@ -89,11 +101,7 @@ impl Default for ODYRules {
 
         ODYRules {
             allowed_neighbors,
-            all_tiles: vec![
-                TileType::Ground,
-                TileType::Tree,
-                TileType::Chest,
-            ],
+            all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest],
             weights,
         }
     }
