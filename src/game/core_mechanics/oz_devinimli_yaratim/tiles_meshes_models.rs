@@ -13,12 +13,18 @@ pub struct TileModels {
     pub ground: Handle<Scene>,
     pub tree: Handle<Scene>,
     pub chest: Handle<Scene>,
+    #[allow(dead_code)]
     pub wall: Handle<Scene>,
+    #[allow(dead_code)]
     pub corner: Handle<Scene>,
+    #[allow(dead_code)]
     pub floor: Handle<Scene>,
+    #[allow(dead_code)]
     pub door: Handle<Scene>,
+    #[allow(dead_code)]
     pub window: Handle<Scene>,
-    pub stairs: Handle<Scene>
+    #[allow(dead_code)]
+    pub stairs: Handle<Scene>,
 }
 
 fn setup_tile_resources(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -32,7 +38,7 @@ fn setup_tile_resources(mut commands: Commands, asset_server: Res<AssetServer>) 
         floor: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/buildingGround.glb")),
         door: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/door.glb")),
         window: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/window.glb")),
-        stairs: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/stairs.glb")),    
+        stairs: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/stairs.glb")),
     };
 
     commands.insert_resource(tile_models);
