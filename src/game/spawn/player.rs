@@ -14,7 +14,7 @@ fn spawn_player(
     mut material_assets: ResMut<Assets<StandardMaterial>>,
 ) {
     let ball_mesh = mesh_assets.add(Extrusion::new(Annulus::new(14.0, 15.0), 20.0));
-    let color = Color::BLACK;
+    let color = Color::srgb(0.05, 0.5, 0.6);
     let ball_material = material_assets.add(StandardMaterial {
         base_color: color,
         ..Default::default()
@@ -32,12 +32,14 @@ fn spawn_player(
                 y: 5.0,
                 z: 5.0,
             }),
+            Visibility::default(),
             Player,
         ))
         .with_children(|parent| {
             parent.spawn((
                 Transform::from_translation(Vec3::new(0.0, 0.0, 0.0))
                     .with_rotation(Quat::from_rotation_x(0.5 * std::f32::consts::PI)),
+                Visibility::default(),
                 Mesh3d(ball_mesh.clone()),
                 MeshMaterial3d(ball_material),
             ));
