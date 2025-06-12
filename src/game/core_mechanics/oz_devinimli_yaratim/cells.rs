@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use std::{collections::HashSet, time::Duration};
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::tiles_meshes_models::{TileModels, WALL};
+use crate::game::core_mechanics::oz_devinimli_yaratim::tiles_meshes_models::TileModels;
 use crate::game::spawn::player::Player;
 
 use super::odycore::Cell;
@@ -142,16 +142,7 @@ fn update_tile_visuals(
                     ));
                 }
 
-                TileType::Wall => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        WALL[1] / 2.0,
-                        0.0 + transform.translation.z,
-                    ));
-                    commands.entity(entity).insert((Wall, transform));
-                }
-
-                TileType::Corner => {
+                TileType::Tree => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x,
                         0.0,
@@ -163,8 +154,8 @@ fn update_tile_visuals(
                         z: settings.cell_edge_length as f32,
                     });
                     commands.entity(entity).insert((
-                        SceneRoot(tile_models.corner.clone()),
-                        Corner,
+                        SceneRoot(tile_models.tree.clone()),
+                        Tree,
                         transform,
                     ));
                 }

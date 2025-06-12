@@ -44,9 +44,9 @@ pub fn get_random_tile(rules: &ODYRules, valid_tiles: &[TileType]) -> TileType {
 
 pub fn get_opposite_direction(direction: Direction) -> Direction {
     match direction {
-        Direction::Front => Direction::Back,
-        Direction::Back => Direction::Front,
-        Direction::Right => Direction::Left,
-        Direction::Left => Direction::Right,
+        Direction::ZeroZeroOne => Direction::ZeroZeroMinusOne,
+        Direction::ZeroZeroMinusOne => Direction::ZeroZeroOne,
+        Direction::OneZeroZero => Direction::MinusOneZeroZero,
+        Direction::MinusOneZeroZero => Direction::OneZeroZero,
     }
 }
