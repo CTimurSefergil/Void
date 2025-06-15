@@ -9,16 +9,18 @@ use crate::game::core_mechanics::oz_devinimli_yaratim::helper_functions::{
 use super::odyrules::*;
 
 pub fn plugin(app: &mut App) {
-    app.init_resource::<ODYRules>()
+    app.init_resource::<OpenSpaceRules>()
         .init_resource::<CellSpatialIndex>()
-        .init_resource::<PropagationQueue>()
+        .init_resource::<RegularPropagationQueue>()
+        .init_resource::<BuildingPropagationQueue>()
         .add_systems(Startup, setup_wfc_rules)
         .add_systems(
             Update,
             (
                 update_spatial_index,
                 initialize_new_cells,
-                propagate_constraints,
+                propagate_building_constraints,
+                propagate_regular_constraints,
                 collapse_lowest_entropy_cell,
             )
                 .chain(),
@@ -26,9 +28,9 @@ pub fn plugin(app: &mut App) {
 }
 
 fn setup_wfc_rules(mut commands: Commands) {
-    commands.insert_resource(ODYRules::default());
+    commands.insert_resource(OpenSpaceRules::default());
     commands.insert_resource(CellSpatialIndex::default());
-    commands.insert_resource(PropagationQueue::default());
+    commands.insert_resource(RegularPropagationQueue::default());
 }
 
 #[derive(Resource, Default)]
@@ -37,13 +39,24 @@ pub struct CellSpatialIndex {
 }
 
 #[derive(Resource, Default)]
-pub struct PropagationQueue {
+pub struct RegularPropagationQueue {
+    pub queue: VecDeque<Entity>,
+}
+
+#[derive(Resource, Default)]
+pub struct BuildingPropagationQueue {
+    pub queue: VecDeque<Entity>,
+}
+
+#[derive(Resource, Default)]
+pub struct DungeonPropagationQueue {
     pub queue: VecDeque<Entity>,
 }
 
 #[derive(Component, Debug)]
 pub struct Cell {
     pub is_collapsed: bool,
+
     pub tile_type: Option<TileType>,
     pub entropy: i32,
     pub valid_tiles: Vec<TileType>,
@@ -98,7 +111,7 @@ fn update_spatial_index(
 }
 
 fn initialize_new_cells(
-    mut wfc_queue: ResMut<PropagationQueue>,
+    mut wfc_queue: ResMut<RegularPropagationQueue>,
     added_cells: Query<Entity, Added<Cell>>,
     spatial_index: Res<CellSpatialIndex>,
     cells: Query<&Cell>,
@@ -141,9 +154,76 @@ fn initialize_new_cells(
     }
 }
 
-fn propagate_constraints(
-    mut wfc_queue: ResMut<PropagationQueue>,
-    rules: Res<ODYRules>,
+fn collapse_lowest_entropy_cell(
+    mut wfc_queue: ResMut<RegularPropagationQueue>,
+    mut cells: Query<(Entity, &mut Cell)>,
+    rules: Res<OpenSpaceRules>,
+) {
+    // PSEUDO CODE for collapse_lowest_entropy_cell function:
+
+    // 1. If propagation queue is not empty, return early (propagation has priority)
+    // 2. Collect all uncollapsed cells as candidates
+    // 3. If no candidates exist, return (all cells are collapsed)
+    // 4. Find the minimum entropy value among all candidates
+    // 5. Filter candidates to only include those with minimum entropy
+    // 6. Randomly select one candidate from the filtered list
+    // 7. If selected cell has valid tiles:
+    //    a. Choose a random tile from valid tiles using rules
+    //    b. Set cell as collapsed with chosen tile
+    //    c. Reset entropy to 0
+    //    d. Add entity to propagation queue for constraint propagation
+
+    if !wfc_queue.queue.is_empty() {
+        return;
+    }
+
+    let mut candidates = cells
+        .iter_mut()
+        .filter(|(_, cell)| !cell.is_collapsed)
+        .collect::<Vec<_>>();
+
+    if candidates.is_empty() {
+        return;
+    }
+
+    let min_entropy = candidates
+        .iter()
+        .map(|(_, cell)| cell.entropy)
+        .min()
+        .unwrap_or(i32::MAX);
+
+    candidates.retain(|(_, cell)| cell.entropy == min_entropy);
+
+    if let Some((entity, cell)) = candidates
+        .into_iter()
+        .choose(&mut rand::rng())
+        .map(|(e, c)| (e, c.into_inner()))
+    {
+        if !cell.valid_tiles.is_empty() {
+            let tile = get_random_tile(&rules, &cell.valid_tiles);
+            cell.tile_type = Some(tile);
+            cell.is_collapsed = true;
+            cell.entropy = 0;
+
+            wfc_queue.queue.push_back(entity);
+        }
+    }
+}
+
+// What is the difference between break and return
+// break exits the current loop, while return exits the entire function.
+
+fn propagate_building_constraints(
+    mut wfc_queue: ResMut<BuildingPropagationQueue>,
+    rules: Res<OpenSpaceRules>,
+    spatial_index: Res<CellSpatialIndex>,
+    mut cells: Query<&mut Cell>,
+) {
+}
+
+fn propagate_regular_constraints(
+    mut wfc_queue: ResMut<RegularPropagationQueue>,
+    rules: Res<OpenSpaceRules>,
     spatial_index: Res<CellSpatialIndex>,
     mut cells: Query<&mut Cell>,
 ) {
@@ -212,7 +292,7 @@ fn propagate_constraints(
                                 &mut neighbor_cell.valid_tiles,
                                 tile,
                                 *direction,
-                                &rules,
+                                rules.as_ref(),
                             );
 
                             if neighbor_cell.valid_tiles.len() != prev_valid_count {
@@ -244,7 +324,7 @@ fn propagate_constraints(
                                     &mut new_valid_tiles,
                                     neighbor_tile,
                                     *direction,
-                                    &rules,
+                                    rules.as_ref(),
                                 );
                                 if new_valid_tiles.len() != prev_count {
                                     changed = true;
@@ -269,62 +349,3 @@ fn propagate_constraints(
         }
     }
 }
-
-fn collapse_lowest_entropy_cell(
-    mut wfc_queue: ResMut<PropagationQueue>,
-    mut cells: Query<(Entity, &mut Cell)>,
-    rules: Res<ODYRules>,
-) {
-    // PSEUDO CODE for collapse_lowest_entropy_cell function:
-
-    // 1. If propagation queue is not empty, return early (propagation has priority)
-    // 2. Collect all uncollapsed cells as candidates
-    // 3. If no candidates exist, return (all cells are collapsed)
-    // 4. Find the minimum entropy value among all candidates
-    // 5. Filter candidates to only include those with minimum entropy
-    // 6. Randomly select one candidate from the filtered list
-    // 7. If selected cell has valid tiles:
-    //    a. Choose a random tile from valid tiles using rules
-    //    b. Set cell as collapsed with chosen tile
-    //    c. Reset entropy to 0
-    //    d. Add entity to propagation queue for constraint propagation
-
-    if !wfc_queue.queue.is_empty() {
-        return;
-    }
-
-    let mut candidates = cells
-        .iter_mut()
-        .filter(|(_, cell)| !cell.is_collapsed)
-        .collect::<Vec<_>>();
-
-    if candidates.is_empty() {
-        return;
-    }
-
-    let min_entropy = candidates
-        .iter()
-        .map(|(_, cell)| cell.entropy)
-        .min()
-        .unwrap_or(i32::MAX);
-
-    candidates.retain(|(_, cell)| cell.entropy == min_entropy);
-
-    if let Some((entity, cell)) = candidates
-        .into_iter()
-        .choose(&mut rand::rng())
-        .map(|(e, c)| (e, c.into_inner()))
-    {
-        if !cell.valid_tiles.is_empty() {
-            let tile = get_random_tile(&rules, &cell.valid_tiles);
-            cell.tile_type = Some(tile);
-            cell.is_collapsed = true;
-            cell.entropy = 0;
-
-            wfc_queue.queue.push_back(entity);
-        }
-    }
-}
-
-// What is the difference between break and return
-// break exits the current loop, while return exits the entire function.

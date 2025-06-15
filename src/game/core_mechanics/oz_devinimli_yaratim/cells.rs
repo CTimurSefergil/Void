@@ -14,8 +14,6 @@ const DESPAWN_INTERVAL_MS: u64 = 1000;
 pub struct GenerationSettings {
     pub cell_edge_length: i32,
     pub total_cells_on_edge: i32,
-    #[allow(dead_code)]
-    pub total_cells_on_y_axis: i32,
     pub spawn_distance: f32,
 }
 
@@ -23,15 +21,14 @@ impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
             cell_edge_length: 9,
-            total_cells_on_edge: 17,
-            total_cells_on_y_axis: 7,
+            total_cells_on_edge: 5,
             spawn_distance: 0.7,
         }
     }
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<ODYRules>()
+    app.init_resource::<OpenSpaceRules>()
         .init_resource::<GenerationSettings>()
         .add_systems(Update, (create_cells, destroy_cells, update_tile_visuals));
 }
@@ -45,7 +42,7 @@ fn create_cells(
     existing_cells: Query<&Transform, With<Cell>>,
     mut last_update: Local<Duration>,
     time: Res<Time>,
-    wfc_rules: Res<ODYRules>,
+    wfc_rules: Res<OpenSpaceRules>,
     settings: Res<GenerationSettings>,
 ) {
     let now = time.elapsed();
@@ -184,3 +181,6 @@ fn update_tile_visuals(
         }
     }
 }
+
+////////////////////////
+// YÜZDE ON DESEM YETER
