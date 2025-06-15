@@ -3,44 +3,16 @@ use bevy::{
     platform::collections::HashMap,
 };
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub enum TileType {
-    Ground,
-    Tree,
-    Chest,
-}
+use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::commons::{
+    Direction, Rules, TileType,
+};
+
 #[derive(Component)]
 pub struct Ground;
 #[derive(Component)]
 pub struct Tree;
 #[derive(Component)]
 pub struct Chest;
-
-#[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
-pub enum Direction {
-    ZeroZeroOne,
-    ZeroZeroMinusOne,
-    OneZeroZero,
-    MinusOneZeroZero,
-}
-
-const _DIRECTIONS: [Direction; 4] = [
-    Direction::ZeroZeroOne,
-    Direction::ZeroZeroMinusOne,
-    Direction::OneZeroZero,
-    Direction::MinusOneZeroZero,
-];
-
-pub const DIRECTION_VECTORS: [(Direction, (i32, i32)); 4] = [
-    (Direction::ZeroZeroOne, (0, 1)),
-    (Direction::ZeroZeroMinusOne, (0, -1)),
-    (Direction::OneZeroZero, (1, 0)),
-    (Direction::MinusOneZeroZero, (-1, 0)),
-];
-
-pub trait CustomRule {
-    fn get_allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>>; 
-}
 
 #[derive(Resource, Debug)]
 pub struct OpenSpaceRules {
@@ -49,8 +21,8 @@ pub struct OpenSpaceRules {
     pub weights: HashMap<TileType, f32>,
 }
 
-impl CustomRule for OpenSpaceRules {
-    fn get_allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>> {
+impl Rules for OpenSpaceRules {
+    fn allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>> {
         &self.allowed_neighbors
     }
 }
@@ -114,39 +86,5 @@ impl Default for OpenSpaceRules {
             all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest],
             weights,
         }
-    }
-}
-
-#[derive(Resource, Debug)]
-pub struct BuildingRules {
-    pub allowed_neighbors: HashMap<TileType, HashMap<Direction, Vec<TileType>>>,
-    pub all_tiles: Vec<TileType>,
-    pub weights: HashMap<TileType, f32>,
-}
-
-impl Default for BuildingRules {
-    fn default() -> Self {
-        let mut allowed_neighbors = HashMap::new();
-        let mut rules_map: HashMap<Direction, Vec<TileType>> = HashMap::new();
-        
-        let mut weights = HashMap::new();
-        BuildingRules { allowed_neighbors, all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest], weights}
-    }
-}
-
-#[derive(Resource, Debug)]
-pub struct DungeonRules {
-    pub allowed_neighbors: HashMap<TileType, HashMap<Direction, Vec<TileType>>>,
-    pub all_tiles: Vec<TileType>,
-    pub weights: HashMap<TileType, f32>,
-}
-
-impl Default for DungeonRules {
-    fn default() -> Self {
-        let mut allowed_neighbors = HashMap::new();
-        let mut rules_map: HashMap<Direction, Vec<TileType>> = HashMap::new();
-        
-        let mut weights = HashMap::new();
-        DungeonRules { allowed_neighbors, all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest], weights}
     }
 }

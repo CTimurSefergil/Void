@@ -2,11 +2,13 @@ use bevy::{platform::collections::HashSet, prelude::*};
 use rand::seq::IteratorRandom;
 use std::collections::{HashMap, VecDeque};
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::helper_functions::{
-    filter_valid_tiles, get_random_tile,
+use crate::game::core_mechanics::oz_devinimli_yaratim::{
+    helper_functions::{filter_valid_tiles, get_random_tile},
+    odyrules::{
+        commons::{DIRECTION_VECTORS, TileType},
+        open_space_rules::OpenSpaceRules,
+    },
 };
-
-use super::odyrules::*;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<OpenSpaceRules>()
