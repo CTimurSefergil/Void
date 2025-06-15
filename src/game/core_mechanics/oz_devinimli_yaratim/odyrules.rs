@@ -38,14 +38,24 @@ pub const DIRECTION_VECTORS: [(Direction, (i32, i32)); 4] = [
     (Direction::MinusOneZeroZero, (-1, 0)),
 ];
 
+pub trait CustomRule {
+    fn get_allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>>; 
+}
+
 #[derive(Resource, Debug)]
-pub struct ODYRules {
+pub struct OpenSpaceRules {
     pub allowed_neighbors: HashMap<TileType, HashMap<Direction, Vec<TileType>>>,
     pub all_tiles: Vec<TileType>,
     pub weights: HashMap<TileType, f32>,
 }
 
-impl Default for ODYRules {
+impl CustomRule for OpenSpaceRules {
+    fn get_allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>> {
+        &self.allowed_neighbors
+    }
+}
+
+impl Default for OpenSpaceRules {
     fn default() -> Self {
         let mut allowed_neighbors = HashMap::new();
         let mut rules_map = HashMap::new();
@@ -99,10 +109,44 @@ impl Default for ODYRules {
         weights.insert(TileType::Tree, 0.2);
         weights.insert(TileType::Chest, 0.01);
 
-        ODYRules {
+        OpenSpaceRules {
             allowed_neighbors,
             all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest],
             weights,
         }
+    }
+}
+
+#[derive(Resource, Debug)]
+pub struct BuildingRules {
+    pub allowed_neighbors: HashMap<TileType, HashMap<Direction, Vec<TileType>>>,
+    pub all_tiles: Vec<TileType>,
+    pub weights: HashMap<TileType, f32>,
+}
+
+impl Default for BuildingRules {
+    fn default() -> Self {
+        let mut allowed_neighbors = HashMap::new();
+        let mut rules_map: HashMap<Direction, Vec<TileType>> = HashMap::new();
+        
+        let mut weights = HashMap::new();
+        BuildingRules { allowed_neighbors, all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest], weights}
+    }
+}
+
+#[derive(Resource, Debug)]
+pub struct DungeonRules {
+    pub allowed_neighbors: HashMap<TileType, HashMap<Direction, Vec<TileType>>>,
+    pub all_tiles: Vec<TileType>,
+    pub weights: HashMap<TileType, f32>,
+}
+
+impl Default for DungeonRules {
+    fn default() -> Self {
+        let mut allowed_neighbors = HashMap::new();
+        let mut rules_map: HashMap<Direction, Vec<TileType>> = HashMap::new();
+        
+        let mut weights = HashMap::new();
+        DungeonRules { allowed_neighbors, all_tiles: vec![TileType::Ground, TileType::Tree, TileType::Chest], weights}
     }
 }
