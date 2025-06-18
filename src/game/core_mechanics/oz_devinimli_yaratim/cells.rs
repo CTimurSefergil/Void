@@ -3,6 +3,7 @@ use std::{collections::HashSet, time::Duration};
 
 use crate::game::{
     core_mechanics::oz_devinimli_yaratim::{
+        odycore::cell::Cell,
         odyrules::{
             commons::TileType,
             open_space_rules::{Chest, Ground, OpenSpaceRules, Tree},
@@ -11,8 +12,6 @@ use crate::game::{
     },
     spawn::player::Player,
 };
-
-use super::odycore::Cell;
 
 const UPDATE_INTERVAL_MS: u64 = 200;
 const DESPAWN_INTERVAL_MS: u64 = 1000;
@@ -28,7 +27,7 @@ impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
             cell_edge_length: 9,
-            total_cells_on_edge: 17,
+            total_cells_on_edge: 21,
             spawn_distance: 0.7,
         }
     }
