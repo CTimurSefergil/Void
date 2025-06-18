@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::{
     commons::{Direction, Rules, TileType},
-    open_space_rules::OpenSpaceRules,
 };
 
 pub fn filter_valid_tiles<T>(
@@ -22,7 +21,10 @@ pub fn filter_valid_tiles<T>(
     }
 }
 
-pub fn get_random_tile(rules: &OpenSpaceRules, valid_tiles: &[TileType]) -> TileType {
+pub fn get_random_tile<T>(rules: &T, valid_tiles: &[TileType]) -> TileType
+where
+    T: Rules,
+{
     use rand::prelude::*;
 
     if valid_tiles.is_empty() {
@@ -32,12 +34,12 @@ pub fn get_random_tile(rules: &OpenSpaceRules, valid_tiles: &[TileType]) -> Tile
     let mut rng = rand::rng();
     let total_weight: f32 = valid_tiles
         .iter()
-        .map(|t| *rules.weights.get(t).unwrap_or(&1.0))
+        .map(|t| *rules.weights().get(t).unwrap_or(&1.0))
         .sum();
 
     let mut random = rng.random_range(0.0..total_weight);
     for &tile in valid_tiles {
-        let weight = *rules.weights.get(&tile).unwrap_or(&1.0);
+        let weight = *rules.weights().get(&tile).unwrap_or(&1.0);
         if random <= weight {
             return tile;
         }
