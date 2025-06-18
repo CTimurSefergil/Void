@@ -25,6 +25,9 @@ impl Rules for OpenSpaceRules {
     fn allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>> {
         &self.allowed_neighbors
     }
+    fn weights<'a>(&'a self) -> &'a HashMap<TileType, f32> {
+        &self.weights
+    }
 }
 
 impl Default for OpenSpaceRules {

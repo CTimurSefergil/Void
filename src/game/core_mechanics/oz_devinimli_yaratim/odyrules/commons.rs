@@ -31,4 +31,5 @@ pub const DIRECTION_VECTORS: [(Direction, (i32, i32)); 4] = [
 
 pub trait Rules {
     fn allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>>;
+    fn weights<'a>(&'a self) -> &'a HashMap<TileType, f32>;
 }

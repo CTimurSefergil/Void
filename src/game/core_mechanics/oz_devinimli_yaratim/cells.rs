@@ -3,7 +3,10 @@ use std::{collections::HashSet, time::Duration};
 
 use crate::game::{
     core_mechanics::oz_devinimli_yaratim::{
-        odyrules::{commons::TileType, open_space_rules::{Chest, Ground, OpenSpaceRules, Tree}},
+        odyrules::{
+            commons::TileType,
+            open_space_rules::{Chest, Ground, OpenSpaceRules, Tree},
+        },
         tiles_meshes_models::TileModels,
     },
     spawn::player::Player,
