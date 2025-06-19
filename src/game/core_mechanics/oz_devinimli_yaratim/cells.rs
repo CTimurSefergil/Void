@@ -183,6 +183,11 @@ fn update_tile_visuals(
                         transform,
                     ));
                 }
+
+                TileType::Empty => {
+                    commands.entity(entity).remove::<Tile>();
+                    continue;
+                }
             };
         }
     }

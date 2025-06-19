@@ -5,6 +5,7 @@ pub enum TileType {
     Ground,
     Tree,
     Chest,
+    Empty
 }
 
 #[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]
