@@ -200,7 +200,7 @@ pub fn propagate_open_space_constraints(
                     cell.entropy = cell.valid_tiles.len() as i32;
 
                     if cell.is_contradiction() {
-                        cell.valid_tiles = vec![TileType::Ground];
+                        cell.valid_tiles = vec![TileType::Empty];
                         cell.entropy = 1;
                     }
                 }
