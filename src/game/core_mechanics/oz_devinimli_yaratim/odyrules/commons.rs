@@ -1,3 +1,4 @@
+// commons.rs
 use bevy::platform::collections::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -29,7 +30,7 @@ pub enum Direction {
     BackLeft,
 }
 
-const _DIRECTIONS: [Direction; 8] = [
+pub const DIRECTIONS: [Direction; 8] = [
     Direction::Front,
     Direction::Back,
     Direction::Right,

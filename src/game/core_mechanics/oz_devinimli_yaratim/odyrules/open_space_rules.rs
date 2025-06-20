@@ -1,8 +1,9 @@
+// open_space_rules.rs
 use bevy::{ecs::resource::Resource, platform::collections::HashMap};
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::{cells::Tile, odyrules::commons::{
-    Direction, Rules, TileType,
-}};
+use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::commons::{
+    DIRECTIONS, Direction, Rules, TileType,
+};
 
 #[derive(Resource, Debug)]
 pub struct OpenSpaceRules {
@@ -15,8 +16,18 @@ impl Rules for OpenSpaceRules {
     fn allowed_neighbors<'a>(&'a self) -> &'a HashMap<TileType, HashMap<Direction, Vec<TileType>>> {
         &self.allowed_neighbors
     }
+
     fn weights<'a>(&'a self) -> &'a HashMap<TileType, f32> {
         &self.weights
+    }
+}
+
+impl OpenSpaceRules {
+    // Helper to set rules for all directions
+    fn set_all_directions(rules_map: &mut HashMap<Direction, Vec<TileType>>, tiles: Vec<TileType>) {
+        for dir in DIRECTIONS.iter() {
+            rules_map.insert(*dir, tiles.clone());
+        }
     }
 }
 
@@ -24,126 +35,15 @@ impl Default for OpenSpaceRules {
     fn default() -> Self {
         let mut allowed_neighbors = HashMap::new();
         let mut rules_map = HashMap::new();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //GROUND
-        rules_map.insert(
-            Direction::Front,
+
+        ////////////////////////////////////////////////////////////////////////////
+        // GROUND
+        OpenSpaceRules::set_all_directions(
+            &mut rules_map,
             vec![
                 TileType::Ground,
-                TileType::Chest,
                 TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![
-                TileType::Ground,
                 TileType::Chest,
-                TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::Right,
-            vec![
-                TileType::Ground,
-                TileType::Chest,
-                TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![
-                TileType::Ground,
-                TileType::Chest,
-                TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![
-                TileType::Ground,
-                TileType::Chest,
-                TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![
-                TileType::Ground,
-                TileType::Chest,
-                TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![
-                TileType::Ground,
-                TileType::Chest,
-                TileType::Tree,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
-        );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![
-                TileType::Ground,
-                TileType::Chest,
-                TileType::Tree,
                 TileType::FountainCorner1,
                 TileType::FountainCorner2,
                 TileType::FountainCorner3,
@@ -156,319 +56,142 @@ impl Default for OpenSpaceRules {
         );
         allowed_neighbors.insert(TileType::Ground, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //TREE
-        rules_map.insert(Direction::Front, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::Back, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::Right, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::Left, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::Ground, TileType::Tree],
-        );
-        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::BackRight, vec![TileType::Ground, TileType::Tree]);
-        rules_map.insert(Direction::BackLeft, vec![TileType::Ground, TileType::Tree]);
+
+        ////////////////////////////////////////////////////////////////////////////
+        // TREE
+        OpenSpaceRules::set_all_directions(&mut rules_map, vec![TileType::Ground, TileType::Tree]);
         allowed_neighbors.insert(TileType::Tree, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //CHEST
-        rules_map.insert(Direction::Front, vec![TileType::Ground]);
-        rules_map.insert(Direction::Back, vec![TileType::Ground]);
-        rules_map.insert(Direction::Right, vec![TileType::Ground]);
-        rules_map.insert(Direction::Left, vec![TileType::Ground]);
-        rules_map.insert(Direction::FrontRight, vec![TileType::Ground]);
-        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground]);
-        rules_map.insert(Direction::BackRight, vec![TileType::Ground]);
-        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
+
+        ////////////////////////////////////////////////////////////////////////////
+        // CHEST
+        OpenSpaceRules::set_all_directions(&mut rules_map, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::Chest, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN CENTER
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN CENTER
         rules_map.insert(
             Direction::Front,
-            vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
+            vec![TileType::FountainEdge1, TileType::FountainCenter],
         );
         rules_map.insert(
             Direction::Back,
-            vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
+            vec![TileType::FountainEdge4, TileType::FountainCenter],
         );
         rules_map.insert(
             Direction::Right,
-            vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
+            vec![TileType::FountainEdge2, TileType::FountainCenter],
         );
         rules_map.insert(
             Direction::Left,
-            vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
-            ],
+            vec![TileType::FountainEdge3, TileType::FountainCenter],
         );
         rules_map.insert(
             Direction::FrontRight,
             vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
                 TileType::FountainEdge1,
                 TileType::FountainEdge2,
-                TileType::FountainEdge3,
-                TileType::FountainEdge4,
+                TileType::FountainCorner2,
+                TileType::FountainCenter,
             ],
         );
         rules_map.insert(
             Direction::FrontLeft,
             vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
                 TileType::FountainEdge1,
-                TileType::FountainEdge2,
                 TileType::FountainEdge3,
-                TileType::FountainEdge4,
+                TileType::FountainCorner1,
+                TileType::FountainCenter,
             ],
         );
         rules_map.insert(
             Direction::BackRight,
             vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
                 TileType::FountainEdge2,
-                TileType::FountainEdge3,
                 TileType::FountainEdge4,
+                TileType::FountainCorner2,
+                TileType::FountainCenter,
             ],
         );
         rules_map.insert(
             Direction::BackLeft,
             vec![
-                TileType::FountainCenter,
-                TileType::FountainCorner1,
-                TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
-                TileType::FountainEdge1,
-                TileType::FountainEdge2,
                 TileType::FountainEdge3,
                 TileType::FountainEdge4,
+                TileType::FountainCorner3,
+                TileType::FountainCenter,
             ],
         );
         allowed_neighbors.insert(TileType::FountainCenter, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN CORNER1
-        rules_map.insert(
-            Direction::Front,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![TileType::FountainEdge3],
-        );
-        rules_map.insert(
-            Direction::Right,
-            vec![TileType::FountainEdge1],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![TileType::FountainCenter],
-        );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![TileType::Ground],
-        );
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN CORNER1 (Top-left)
+        rules_map.insert(Direction::Front, vec![TileType::Ground]);
+        rules_map.insert(Direction::Back, vec![TileType::FountainEdge3]);
+        rules_map.insert(Direction::Right, vec![TileType::FountainEdge1]);
+        rules_map.insert(Direction::Left, vec![TileType::Ground]);
+        rules_map.insert(Direction::FrontRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground]);
+        rules_map.insert(Direction::BackRight, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainCorner1, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN CORNER2
-        rules_map.insert(
-            Direction::Front,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![TileType::FountainEdge2],
-        );
-        rules_map.insert(
-            Direction::Right,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![TileType::FountainEdge1],
-        );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![TileType::FountainCenter],
-        );
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN CORNER2 (Top-right)
+        rules_map.insert(Direction::Front, vec![TileType::Ground]);
+        rules_map.insert(Direction::Back, vec![TileType::FountainEdge2]);
+        rules_map.insert(Direction::Right, vec![TileType::Ground]);
+        rules_map.insert(Direction::Left, vec![TileType::FountainEdge1]);
+        rules_map.insert(Direction::FrontRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground]);
+        rules_map.insert(Direction::BackRight, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainCorner2, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN CORNER3
-        rules_map.insert(
-            Direction::Front,
-            vec![TileType::FountainEdge3],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Right,
-            vec![TileType::FountainEdge4],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::FountainCenter],
-        );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![TileType::Ground],
-        );
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN CORNER3 (Bottom-left)
+        rules_map.insert(Direction::Front, vec![TileType::FountainEdge3]);
+        rules_map.insert(Direction::Back, vec![TileType::Ground]);
+        rules_map.insert(Direction::Right, vec![TileType::FountainEdge4]);
+        rules_map.insert(Direction::Left, vec![TileType::Ground]);
+        rules_map.insert(Direction::FrontRight, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground]);
+        rules_map.insert(Direction::BackRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainCorner3, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN CORNER4
-        rules_map.insert(
-            Direction::Front,
-            vec![TileType::FountainEdge2],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Right,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![TileType::FountainEdge4],
-        );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![TileType::FountainCenter],
-        );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![TileType::Ground],
-        );
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN CORNER4 (Bottom-right)
+        rules_map.insert(Direction::Front, vec![TileType::FountainEdge2]);
+        rules_map.insert(Direction::Back, vec![TileType::Ground]);
+        rules_map.insert(Direction::Right, vec![TileType::Ground]);
+        rules_map.insert(Direction::Left, vec![TileType::FountainEdge4]);
+        rules_map.insert(Direction::FrontRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::FrontLeft, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::BackRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainCorner4, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN EDGE1
-        rules_map.insert(
-            Direction::Front,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![TileType::FountainCenter],
-        );
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN EDGE1 (Top edge - expandable horizontally)
+        rules_map.insert(Direction::Front, vec![TileType::Ground]);
+        rules_map.insert(Direction::Back, vec![TileType::FountainCenter]);
         rules_map.insert(
             Direction::Right,
             vec![TileType::FountainEdge1, TileType::FountainCorner2],
         );
         rules_map.insert(
             Direction::Left,
-            vec![TileType::FountainEdge1, TileType::FountainCorner1],
+            vec![TileType::FountainEdge1, TileType::FountainCorner2],
         );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::FrontRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground]);
         rules_map.insert(
             Direction::BackRight,
             vec![TileType::FountainEdge2, TileType::FountainCenter],
@@ -479,88 +202,61 @@ impl Default for OpenSpaceRules {
         );
         allowed_neighbors.insert(TileType::FountainEdge1, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN EDGE2
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN EDGE2 (Right edge - expandable vertically)
         rules_map.insert(
             Direction::Front,
             vec![TileType::FountainEdge2, TileType::FountainCorner2],
         );
         rules_map.insert(
             Direction::Back,
-            vec![TileType::FountainEdge2, TileType::FountainCorner2],
+            vec![TileType::FountainEdge2, TileType::FountainCorner4],
         );
-        rules_map.insert(
-            Direction::Right,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![TileType::FountainCenter],
-        );
-        rules_map.insert(
-            Direction::FrontRight,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::Right, vec![TileType::Ground]);
+        rules_map.insert(Direction::Left, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::FrontRight, vec![TileType::Ground]);
         rules_map.insert(
             Direction::FrontLeft,
-            vec![TileType::FountainCenter, TileType::FountainEdge1],
+            vec![TileType::FountainEdge1, TileType::FountainCenter],
         );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::BackRight, vec![TileType::Ground]);
         rules_map.insert(
             Direction::BackLeft,
-            vec![TileType::FountainCenter, TileType::FountainEdge4],
+            vec![TileType::FountainEdge4, TileType::FountainCenter],
         );
         allowed_neighbors.insert(TileType::FountainEdge2, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN EDGE3
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN EDGE3 (Left edge - expandable vertically)
         rules_map.insert(
             Direction::Front,
-            vec![TileType::FountainCorner1, TileType::FountainEdge3],
+            vec![TileType::FountainEdge3, TileType::FountainCorner1],
         );
         rules_map.insert(
             Direction::Back,
-            vec![TileType::FountainCorner3, TileType::FountainEdge3],
+            vec![TileType::FountainEdge3, TileType::FountainCorner3],
         );
-        rules_map.insert(
-            Direction::Right,
-            vec![TileType::FountainCenter],
-        );
-        rules_map.insert(
-            Direction::Left,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::Right, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::Left, vec![TileType::Ground]);
         rules_map.insert(
             Direction::FrontRight,
             vec![TileType::FountainEdge1, TileType::FountainCenter],
         );
-        rules_map.insert(
-            Direction::FrontLeft,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::FrontLeft, vec![TileType::Ground]);
         rules_map.insert(
             Direction::BackRight,
             vec![TileType::FountainEdge4, TileType::FountainCenter],
         );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainEdge3, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //FOUNTAIN EDGE4
-        rules_map.insert(
-            Direction::Front,
-            vec![TileType::FountainCenter],
-        );
-        rules_map.insert(
-            Direction::Back,
-            vec![TileType::Ground],
-        );
+
+        ////////////////////////////////////////////////////////////////////////////
+        // FOUNTAIN EDGE4 (Bottom edge - expandable horizontally)
+        rules_map.insert(Direction::Front, vec![TileType::FountainCenter]);
+        rules_map.insert(Direction::Back, vec![TileType::Ground]);
         rules_map.insert(
             Direction::Right,
             vec![TileType::FountainEdge4, TileType::FountainCorner4],
@@ -571,27 +267,21 @@ impl Default for OpenSpaceRules {
         );
         rules_map.insert(
             Direction::FrontRight,
-            vec![TileType::FountainCenter, TileType::FountainEdge2],
+            vec![TileType::FountainEdge2, TileType::FountainCenter],
         );
         rules_map.insert(
             Direction::FrontLeft,
-            vec![TileType::FountainCenter, TileType::FountainEdge3],
+            vec![TileType::FountainEdge3, TileType::FountainCenter],
         );
-        rules_map.insert(
-            Direction::BackRight,
-            vec![TileType::Ground],
-        );
-        rules_map.insert(
-            Direction::BackLeft,
-            vec![TileType::Ground],
-        );
+        rules_map.insert(Direction::BackRight, vec![TileType::Ground]);
+        rules_map.insert(Direction::BackLeft, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainEdge4, rules_map.clone());
         rules_map.clear();
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        // Weights for tile selection
         let mut weights = HashMap::new();
-        weights.insert(TileType::Ground, 0.8);
-        weights.insert(TileType::Tree, 0.2);
+        weights.insert(TileType::Ground, 0.2);
+        weights.insert(TileType::Tree, 0.1);
         weights.insert(TileType::Chest, 0.01);
         weights.insert(TileType::FountainCenter, 0.3);
         weights.insert(TileType::FountainCorner1, 0.3);
