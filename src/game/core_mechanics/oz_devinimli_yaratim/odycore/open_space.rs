@@ -74,7 +74,8 @@ pub fn collapse_lowest_entropy_open_space_cell(
             cell.tile_type = Some(tile);
             cell.is_collapsed = true;
             cell.entropy = 0;
-
+            //Büyük bir sıkıntı var
+            println!("{:?}", cell.position);
             open_space_queue.queue.push_back(entity);
         }
     }
@@ -200,7 +201,7 @@ pub fn propagate_open_space_constraints(
                     cell.entropy = cell.valid_tiles.len() as i32;
 
                     if cell.is_contradiction() {
-                        cell.valid_tiles = vec![TileType::Ground];
+                        cell.valid_tiles = vec![TileType::Empty];
                         cell.entropy = 1;
                     }
                 }

@@ -4,15 +4,11 @@ use std::{collections::HashSet, time::Duration};
 use crate::game::{
     core_mechanics::oz_devinimli_yaratim::{
         odycore::cell::Cell,
-        odyrules::{
-            commons::TileType,
-            open_space_rules::{Chest, Ground, OpenSpaceRules, Tree},
-        },
+        odyrules::{commons::TileType, open_space_rules::OpenSpaceRules},
         tiles_meshes_models::TileModels,
     },
     spawn::player::Player,
 };
-
 const UPDATE_INTERVAL_MS: u64 = 200;
 const DESPAWN_INTERVAL_MS: u64 = 1000;
 
@@ -141,11 +137,9 @@ fn update_tile_visuals(
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
                     });
-                    commands.entity(entity).insert((
-                        SceneRoot(tile_models.ground.clone()),
-                        Ground,
-                        transform,
-                    ));
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.ground.clone()), transform));
                 }
 
                 TileType::Tree => {
@@ -159,11 +153,9 @@ fn update_tile_visuals(
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
                     });
-                    commands.entity(entity).insert((
-                        SceneRoot(tile_models.tree.clone()),
-                        Tree,
-                        transform,
-                    ));
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.tree.clone()), transform));
                 }
 
                 TileType::Chest => {
@@ -177,11 +169,157 @@ fn update_tile_visuals(
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
                     });
-                    commands.entity(entity).insert((
-                        SceneRoot(tile_models.chest.clone()),
-                        Chest,
-                        transform,
-                    ));
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.chest.clone()), transform));
+                }
+
+                TileType::FountainCenter => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_center.clone()), transform));
+                }
+
+                TileType::FountainCorner1 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
+                }
+
+                TileType::FountainCorner2 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
+                }
+
+                TileType::FountainCorner3 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
+                }
+
+                TileType::FountainCorner4 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
+                }
+
+                TileType::FountainEdge1 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
+                }
+
+                TileType::FountainEdge2 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
+                }
+
+                TileType::FountainEdge3 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
+                }
+
+                TileType::FountainEdge4 => {
+                    let transform = Transform::from_translation(Vec3::new(
+                        0.0 + transform.translation.x,
+                        0.0,
+                        0.0 + transform.translation.z,
+                    ))
+                    .with_scale(Vec3 {
+                        x: settings.cell_edge_length as f32,
+                        y: settings.cell_edge_length as f32,
+                        z: settings.cell_edge_length as f32,
+                    });
+                    commands
+                        .entity(entity)
+                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
+                }
+
+                TileType::Empty => {
+                    commands.entity(entity).remove::<SceneRoot>();
                 }
             };
         }

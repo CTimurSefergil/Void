@@ -13,32 +13,22 @@ pub struct TileModels {
     pub ground: Handle<Scene>,
     pub tree: Handle<Scene>,
     pub chest: Handle<Scene>,
-    #[allow(dead_code)]
-    pub wall: Handle<Scene>,
-    #[allow(dead_code)]
-    pub corner: Handle<Scene>,
-    #[allow(dead_code)]
-    pub floor: Handle<Scene>,
-    #[allow(dead_code)]
-    pub door: Handle<Scene>,
-    #[allow(dead_code)]
-    pub window: Handle<Scene>,
-    #[allow(dead_code)]
-    pub stairs: Handle<Scene>,
+    pub fountain_center: Handle<Scene>,
+    pub fountain_corner: Handle<Scene>,
+    pub fountain_edge: Handle<Scene>,
 }
 
 fn setup_tile_resources(mut commands: Commands, asset_server: Res<AssetServer>) {
     let tile_models = TileModels {
-        ground: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/road.glb")),
+        ground: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/wallBlock.glb")),
         tree: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/tree.glb")),
         chest: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/rockWide.glb")),
-
-        wall: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/wall.glb")),
-        corner: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/corner.glb")),
-        floor: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/buildingGround.glb")),
-        door: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/door.glb")),
-        window: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/window.glb")),
-        stairs: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/stairs.glb")),
+        fountain_center: asset_server
+            .load(GltfAssetLabel::Scene(0).from_asset("models/fountainCenter.glb")),
+        fountain_corner: asset_server
+            .load(GltfAssetLabel::Scene(0).from_asset("models/fountainCorner.glb")),
+        fountain_edge: asset_server
+            .load(GltfAssetLabel::Scene(0).from_asset("models/fountainEdge.glb")),
     };
 
     commands.insert_resource(tile_models);

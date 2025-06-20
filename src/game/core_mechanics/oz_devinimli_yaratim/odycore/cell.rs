@@ -23,7 +23,6 @@ pub struct CellSpatialIndex {
 #[derive(Component, Debug)]
 pub struct Cell {
     pub is_collapsed: bool,
-
     pub tile_type: Option<TileType>,
     pub entropy: i32,
     pub valid_tiles: Vec<TileType>,
