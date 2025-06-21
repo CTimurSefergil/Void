@@ -1,7 +1,8 @@
 // commons.rs
 use bevy::platform::collections::HashMap;
+use strum_macros::EnumIter;
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, EnumIter)]
 pub enum TileType {
     Ground,
     Tree,
@@ -24,32 +25,20 @@ pub enum Direction {
     Back,
     Right,
     Left,
-    FrontRight,
-    FrontLeft,
-    BackRight,
-    BackLeft,
 }
 
-pub const DIRECTIONS: [Direction; 8] = [
+pub const DIRECTIONS: [Direction; 4] = [
     Direction::Front,
     Direction::Back,
     Direction::Right,
     Direction::Left,
-    Direction::FrontRight,
-    Direction::FrontLeft,
-    Direction::BackRight,
-    Direction::BackLeft,
 ];
 
-pub const DIRECTION_VECTORS: [(Direction, (i32, i32)); 8] = [
+pub const DIRECTION_VECTORS: [(Direction, (i32, i32)); 4] = [
     (Direction::Front, (0, 1)),
     (Direction::Back, (0, -1)),
     (Direction::Right, (1, 0)),
     (Direction::Left, (-1, 0)),
-    (Direction::FrontRight, (1, 1)),
-    (Direction::FrontLeft, (-1, 1)),
-    (Direction::BackRight, (1, -1)),
-    (Direction::BackLeft, (-1, -1)),
 ];
 
 pub trait Rules {

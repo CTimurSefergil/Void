@@ -78,41 +78,18 @@ pub fn update_spatial_index(
 
 pub fn initialize_new_cells(
     mut wfc_queue: ResMut<OpenSpacePropagationQueue>,
-    added_cells: Query<Entity, Added<Cell>>,
+    added_cells: Query<(Entity, &Cell), Added<Cell>>,
     spatial_index: Res<CellSpatialIndex>,
     cells: Query<&Cell>,
 ) {
-    // PSEUDO CODE for initialize_new_cells function:
-
-    // 1. Iterate through all entities that have Cell component added this frame
-    // 2. For each newly added cell entity:
-    //    a. Get the cell component data (position, etc.)
-    //    b. If cell data retrieval fails, skip to next entity
-    //
-    //    c. Check all neighboring positions (North, South, East, West):
-    //       - Calculate neighbor position using direction vectors
-    //       - Look up neighbor entity in spatial index using position
-    //       - If neighbor exists:
-    //         * Get neighbor's cell data
-    //         * If neighbor is collapsed (has a definite tile type):
-    //           - Add current entity to propagation queue
-    //           - Break out of neighbor checking loop (one collapsed neighbor is enough)
-    //
-    // Purpose: When a new cell is added to the grid, if it has any collapsed neighbors,
-    // it needs to have its valid tiles constrained based on those neighbors' rules.
-    // Adding to queue triggers constraint propagation in the next system.
-    // If we didn't add them to the propagation queue, those newly added cells would not have their valid tiles updated based on the collapsed neighbors.
-    // They would remain with their initial valid tiles, which could lead to inconsistencies in the wave function collapse algorithm.
-    for entity in added_cells.iter() {
-        if let Ok(cell) = cells.get(entity) {
-            for (_, (dx, dz)) in DIRECTION_VECTORS.iter() {
-                let neighbor_pos = (cell.position.0 + dx, cell.position.1 + dz);
-                if let Some(neighbor_entity) = spatial_index.grid.get(&neighbor_pos) {
-                    if let Ok(neighbor_cell) = cells.get(*neighbor_entity) {
-                        if neighbor_cell.is_collapsed {
-                            wfc_queue.queue.push_back(entity);
-                            break;
-                        }
+    for (entity, cell) in added_cells.iter() {
+        for (_, (dx, dz)) in DIRECTION_VECTORS.iter() {
+            let neighbor_pos = (cell.position.0 + dx, cell.position.1 + dz);
+            if let Some(neighbor_entity) = spatial_index.grid.get(&neighbor_pos) {
+                if let Ok(neighbor_cell) = cells.get(*neighbor_entity) {
+                    if neighbor_cell.is_collapsed {
+                        wfc_queue.queue.push_back(entity);
+                        break;
                     }
                 }
             }
