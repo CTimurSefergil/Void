@@ -74,8 +74,6 @@ pub fn collapse_lowest_entropy_open_space_cell(
             cell.tile_type = Some(tile);
             cell.is_collapsed = true;
             cell.entropy = 0;
-            //Büyük bir sıkıntı var
-            println!("{:?}", cell.position);
             open_space_queue.queue.push_back(entity);
         }
     }

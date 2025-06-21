@@ -1,6 +1,9 @@
 use bevy::{
     app::{App, Startup, Update},
-    ecs::{schedule::IntoScheduleConfigs, system::Commands},
+    ecs::{
+        schedule::IntoScheduleConfigs,
+        system::{Commands, Res},
+    },
 };
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::{
@@ -29,10 +32,15 @@ pub fn plugin(app: &mut App) {
                 update_spatial_index,
                 initialize_new_cells,
                 propagate_open_space_constraints,
-                collapse_lowest_entropy_open_space_cell,
+                collapse_lowest_entropy_open_space_cell.run_if(propagation_queue_empty),
             )
                 .chain(),
         );
+}
+
+// Run condition: only allow collapse if the queue is empty
+fn propagation_queue_empty(queue: Res<OpenSpacePropagationQueue>) -> bool {
+    queue.queue.is_empty()
 }
 
 fn setup_wfc_rules(mut commands: Commands) {
