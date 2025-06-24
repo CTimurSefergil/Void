@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 use bevy::{
     app::{App, Startup, Update},
     ecs::{schedule::IntoScheduleConfigs, system::Commands},
@@ -43,4 +44,20 @@ fn setup_wfc_rules(mut commands: Commands) {
     commands.insert_resource(CellSpatialIndex::default());
     commands.insert_resource(OpenSpacePropagationQueue::default());
     commands.insert_resource(BuildingPropagationQueue::default());
+=======
+use bevy::prelude::*;
+pub mod open_space;
+
+pub fn plugin(app: &mut App) {
+    use open_space::{
+        update_spatial_index,
+        collapse_lowest_entropy_cell,
+        propagate_newly_added_cells,
+    };
+
+    app
+        .add_systems(Update, update_spatial_index)
+        .add_systems(Update, collapse_lowest_entropy_cell)
+        .add_systems(Update, propagate_newly_added_cells);
+>>>>>>> Stashed changes
 }

@@ -1,67 +1,73 @@
-use std::collections::VecDeque;
-
-use bevy::{
-    ecs::{
-        entity::Entity,
-        resource::Resource,
-        system::{Query, Res, ResMut},
-    },
-    platform::collections::HashSet,
-};
+use bevy::{platform::collections::HashMap, prelude::*};
 use rand::seq::IteratorRandom;
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::{
-    helper_functions::{filter_valid_tiles::filter_valid_tiles, get_random_tile::get_random_tile},
-    odycore::cell::{Cell, CellSpatialIndex},
-    odyrules::{
-        commons::{DIRECTION_VECTORS, TileType},
-        open_space_rules::OpenSpaceRules,
-    },
+use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::{
+    commons::{DIRECTION_VECTORS, Direction, TileType},
+    open_space_rules::OpenSpaceRules,
 };
 
-#[derive(Resource, Default)]
-pub struct OpenSpacePropagationQueue {
-    pub queue: VecDeque<Entity>,
+#[derive(Component, Debug)]
+pub struct Cell {
+    pub is_collapsed: bool,
+    pub tile_type: Option<TileType>,
+    pub entropy: i32,
+    pub valid_tiles: Vec<TileType>,
+    pub position: (i32, i32),
 }
 
-pub fn collapse_lowest_entropy_open_space_cell(
-    mut open_space_queue: ResMut<OpenSpacePropagationQueue>,
-    mut cells: Query<(Entity, &mut Cell)>,
-    open_space_rules: Res<OpenSpaceRules>,
-) {
-    // PSEUDO CODE for collapse_lowest_entropy_cell function:
-
-    // 1. If propagation queue is not empty, return early (propagation has priority)
-    // 2. Collect all uncollapsed cells as candidates
-    // 3. If no candidates exist, return (all cells are collapsed)
-    // 4. Find the minimum entropy value among all candidates
-    // 5. Filter candidates to only include those with minimum entropy
-    // 6. Randomly select one candidate from the filtered list
-    // 7. If selected cell has valid tiles:
-    //    a. Choose a random tile from valid tiles using rules
-    //    b. Set cell as collapsed with chosen tile
-    //    c. Reset entropy to 0
-    //    d. Add entity to propagation queue for constraint propagation
-
-    if !open_space_queue.queue.is_empty() {
-        return;
+impl Cell {
+    pub fn new(all_tiles: &[TileType], position: (i32, i32)) -> Self {
+        Self {
+            is_collapsed: false,
+            tile_type: None,
+            entropy: all_tiles.len() as i32,
+            valid_tiles: all_tiles.to_vec(),
+            position,
+        }
     }
 
+    pub fn is_contradiction(&self) -> bool {
+        self.valid_tiles.is_empty() && !self.is_collapsed
+    }
+}
+
+#[derive(Resource)]
+pub struct SpatialIndex {
+    cells: HashMap<(i32, i32), Entity>,
+}
+
+pub fn update_spatial_index(
+    cells: Query<(Entity, &Transform), Added<Cell>>,
+    mut removed_cells: RemovedComponents<Cell>,
+    mut spatial_index: ResMut<SpatialIndex>,
+) {
+    for (entity, pos) in cells.iter() {
+        spatial_index
+            .cells
+            .insert((pos.translation.x as i32, pos.translation.z as i32), entity);
+    }
+    for entity in removed_cells.read() {
+        spatial_index
+            .cells
+            .retain(|_, &mut removed_entity| removed_entity != entity);
+    }
+}
+
+pub fn collapse_lowest_entropy_cell(mut cells: Query<&mut Cell>) {
+    //  Hücrelerin olası seçenek sayısını al
     let mut candidates = cells
         .iter_mut()
-        .filter(|(_, cell)| !cell.is_collapsed)
+        .filter(|cell| !cell.is_collapsed)
         .collect::<Vec<_>>();
 
     if candidates.is_empty() {
         return;
     }
 
-    let min_entropy = candidates
-        .iter()
-        .map(|(_, cell)| cell.entropy)
-        .min()
-        .unwrap_or(i32::MAX);
+    let lowest_entropy = candidates.iter().map(|cell| cell.entropy).min().unwrap();
+    candidates.retain(|cell| cell.entropy == lowest_entropy);
 
+<<<<<<< Updated upstream
     candidates.retain(|(_, cell)| cell.entropy == min_entropy);
 
     if let Some((entity, cell)) = candidates
@@ -76,53 +82,26 @@ pub fn collapse_lowest_entropy_open_space_cell(
             cell.entropy = 0;
 
             open_space_queue.queue.push_back(entity);
+=======
+    //  Birini seç ve tipini belirle
+    let mut rng = rand::rng();
+    if let Some(mut chosen_cell) = candidates.into_iter().choose(&mut rng) {
+        if !chosen_cell.valid_tiles.is_empty() {
+            if let Some(&tile) = chosen_cell.valid_tiles.iter().choose(&mut rng) {
+                chosen_cell.tile_type = Some(tile);
+                chosen_cell.is_collapsed = true;
+            }
+>>>>>>> Stashed changes
         }
     }
 }
 
-pub fn propagate_open_space_constraints(
-    mut wfc_queue: ResMut<OpenSpacePropagationQueue>,
+pub fn propagate_newly_added_cells(
+    mut cells: Query<(&mut Cell, &Transform), Added<Cell>>,
+    spatial_index: Res<SpatialIndex>,
     rules: Res<OpenSpaceRules>,
-    spatial_index: Res<CellSpatialIndex>,
-    mut cells: Query<&mut Cell>,
 ) {
-    // PSEUDO CODE for propagate_constraints function:
-
-    // 1. Initialize a set to track processed entities (avoid infinite loops)
-    // 2. While there are entities in the propagation queue:
-    //    a. Pop the front entity from queue
-    //    b. Skip if already processed in this iteration
-    //    c. Mark entity as processed
-    //
-    //    d. Extract cell data (collapsed state, tile type, position, valid tiles)
-    //    e. If entity no longer exists, continue to next
-    //
-    //    f. If cell is collapsed:
-    //       - For each direction (North, South, East, West):
-    //         * Calculate neighbor position
-    //         * If neighbor exists and is not collapsed:
-    //           - Filter neighbor's valid tiles based on current tile's constraints
-    //           - If neighbor's valid tiles changed, add neighbor to queue
-    //           - If neighbor has contradiction (no valid tiles), reset to Ground
-    //
-    //    g. If cell is not collapsed:
-    //       - Create copy of current valid tiles
-    //       - For each direction:
-    //         * Check if neighbor exists and is collapsed
-    //         * If so, filter current cell's valid tiles based on neighbor's constraints
-    //       - If valid tiles changed:
-    //         * Update cell's valid tiles and entropy
-    //         * If contradiction occurs, reset to Ground tile
-
-    let mut processed = HashSet::new();
-
-    while let Some(entity) = wfc_queue.queue.pop_front() {
-        if processed.contains(&entity) {
-            continue;
-        }
-        processed.insert(entity);
-
-        let (is_collapsed, tile_type, position, valid_tiles) = {
+    let (is_collapsed, tile_type, position, valid_tiles) = {
             if let Ok(cell) = cells.get(entity) {
                 (
                     cell.is_collapsed,
@@ -135,11 +114,21 @@ pub fn propagate_open_space_constraints(
             }
         };
 
-        if is_collapsed {
-            if let Some(tile) = tile_type {
-                for (direction, (dx, dz)) in DIRECTION_VECTORS.iter() {
-                    let neighbor_pos = (position.0 + dx, position.1 + dz);
+        for (direction, (x, z)) in DIRECTION_VECTORS {
+            if let Some(neighbor_entity) = spatial_index.cells.get(&(
+                transform.translation.x as i32 + x,
+                transform.translation.z as i32 + z,
+            )) {
+                if let Ok((neighbor_cell, _)) = cells_query.get_mut(*neighbor_entity) {
+                    if let Some(tile_type_of_neighbor) = neighbor_cell.tile_type {
+                        let current_valid_tiles = filter_valid_tiles(
+                            tile_type_of_neighbor,
+                            cell.valid_tiles.clone(),
+                            direction,
+                            rules.as_ref(),
+                        );
 
+<<<<<<< Updated upstream
                     if let Some(neighbor_entity) = spatial_index.grid.get(&neighbor_pos) {
                         if let Ok(mut neighbor_cell) = cells.get_mut(*neighbor_entity) {
                             if neighbor_cell.is_collapsed {
@@ -202,9 +191,36 @@ pub fn propagate_open_space_constraints(
                     if cell.is_contradiction() {
                         cell.valid_tiles = vec![TileType::Empty];
                         cell.entropy = 1;
+=======
+                        let entropy = current_valid_tiles.len() as i32;
+                        cell.valid_tiles = current_valid_tiles;
+                        cell.entropy = entropy;
+>>>>>>> Stashed changes
                     }
                 }
             }
         }
+    
+}
+
+pub fn filter_valid_tiles(
+    tile_type_of_neighbor: TileType,
+    valid_tiles: Vec<TileType>,
+    direction: Direction,
+    rules: &OpenSpaceRules,
+) -> Vec<TileType> {
+    let mut new_valid_tiles = Vec::new();
+    if let Some(neighbors_valid_tiles) = rules.allowed_neighbors.get(&tile_type_of_neighbor) {
+        for tile in valid_tiles.iter() {
+            if neighbors_valid_tiles
+                .get(&direction)
+                .unwrap()
+                .contains(tile)
+            {
+                new_valid_tiles.push(*tile);
+            }
+        }
     }
+
+    new_valid_tiles
 }

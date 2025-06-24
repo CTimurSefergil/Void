@@ -35,6 +35,7 @@ impl Default for OpenSpaceRules {
         let mut allowed_neighbors = HashMap::new();
         let mut rules_map = HashMap::new();
 
+<<<<<<< Updated upstream
         rules_map.insert(
             Direction::ZeroZeroOne,
             vec![TileType::Ground, TileType::Chest, TileType::Tree],
@@ -83,6 +84,19 @@ impl Default for OpenSpaceRules {
         weights.insert(TileType::Ground, 0.8);
         weights.insert(TileType::Tree, 0.2);
         weights.insert(TileType::Chest, 0.01);
+=======
+        rules_map.insert(Direction::Front, vec![TileType::Ground]);
+
+        let mut weights = HashMap::new();
+        for tile in TileType::iter() {
+            let weight = match tile {
+                TileType::Ground => 0.2,
+                TileType::Tree => 0.1,
+                TileType::Chest => 0.01,
+            };
+            weights.insert(tile, weight);
+        }
+>>>>>>> Stashed changes
 
         OpenSpaceRules {
             allowed_neighbors,
