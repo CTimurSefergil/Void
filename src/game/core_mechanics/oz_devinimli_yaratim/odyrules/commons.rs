@@ -16,7 +16,6 @@ pub enum TileType {
     FountainEdge2,
     FountainEdge3,
     FountainEdge4,
-    Empty,
 }
 
 #[derive(Clone, Copy, Hash, Eq, PartialEq, Debug)]

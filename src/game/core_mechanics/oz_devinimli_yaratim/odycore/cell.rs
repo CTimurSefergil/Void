@@ -5,15 +5,12 @@ use bevy::{
         query::Added,
         removal_detection::RemovedComponents,
         resource::Resource,
-        system::{Query, Res, ResMut},
+        system::{Query, ResMut},
     },
     platform::collections::HashMap,
 };
 
-use crate::game::core_mechanics::oz_devinimli_yaratim::{
-    odycore::open_space::OpenSpacePropagationQueue,
-    odyrules::commons::{DIRECTION_VECTORS, TileType},
-};
+use crate::game::core_mechanics::oz_devinimli_yaratim::odyrules::commons::TileType;
 
 #[derive(Resource, Default)]
 pub struct CellSpatialIndex {
@@ -40,8 +37,10 @@ impl Cell {
         }
     }
 
-    pub fn is_contradiction(&self) -> bool {
-        self.valid_tiles.is_empty() && !self.is_collapsed
+    pub fn update_entropy(&mut self) {
+        if !self.is_collapsed {
+            self.entropy = self.valid_tiles.len() as i32;
+        }
     }
 }
 
@@ -73,26 +72,5 @@ pub fn update_spatial_index(
         spatial_index
             .grid
             .retain(|_, &mut stored_entity| stored_entity != entity);
-    }
-}
-
-pub fn initialize_new_cells(
-    mut wfc_queue: ResMut<OpenSpacePropagationQueue>,
-    added_cells: Query<(Entity, &Cell), Added<Cell>>,
-    spatial_index: Res<CellSpatialIndex>,
-    cells: Query<&Cell>,
-) {
-    for (entity, cell) in added_cells.iter() {
-        for (_, (dx, dz)) in DIRECTION_VECTORS.iter() {
-            let neighbor_pos = (cell.position.0 + dx, cell.position.1 + dz);
-            if let Some(neighbor_entity) = spatial_index.grid.get(&neighbor_pos) {
-                if let Ok(neighbor_cell) = cells.get(*neighbor_entity) {
-                    if neighbor_cell.is_collapsed {
-                        wfc_queue.queue.push_back(entity);
-                        break;
-                    }
-                }
-            }
-        }
     }
 }

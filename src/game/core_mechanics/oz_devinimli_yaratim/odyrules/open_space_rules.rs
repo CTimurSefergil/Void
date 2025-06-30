@@ -37,20 +37,48 @@ impl Default for OpenSpaceRules {
 
         ////////////////////////////////////////////////////////////////////////////
         // GROUND
-        OpenSpaceRules::set_all_directions(
-            &mut rules_map,
+        rules_map.insert(
+            Direction::Front,
+            vec![
+                TileType::Ground,
+                TileType::Tree,
+                TileType::Chest,
+                TileType::FountainCorner3,
+                TileType::FountainCorner4,
+                TileType::FountainEdge4,
+            ],
+        );
+        rules_map.insert(
+            Direction::Back,
             vec![
                 TileType::Ground,
                 TileType::Tree,
                 TileType::Chest,
                 TileType::FountainCorner1,
                 TileType::FountainCorner2,
-                TileType::FountainCorner3,
-                TileType::FountainCorner4,
                 TileType::FountainEdge1,
-                TileType::FountainEdge2,
+            ],
+        );
+        rules_map.insert(
+            Direction::Right,
+            vec![
+                TileType::Ground,
+                TileType::Tree,
+                TileType::Chest,
+                TileType::FountainCorner1,
+                TileType::FountainCorner3,
                 TileType::FountainEdge3,
-                TileType::FountainEdge4,
+            ],
+        );
+        rules_map.insert(
+            Direction::Left,
+            vec![
+                TileType::Ground,
+                TileType::Tree,
+                TileType::Chest,
+                TileType::FountainCorner2,
+                TileType::FountainCorner4,
+                TileType::FountainEdge3,
             ],
         );
         allowed_neighbors.insert(TileType::Ground, rules_map.clone());
@@ -58,18 +86,25 @@ impl Default for OpenSpaceRules {
 
         ////////////////////////////////////////////////////////////////////////////
         // TREE
-        OpenSpaceRules::set_all_directions(&mut rules_map, vec![TileType::Ground, TileType::Tree]);
+        OpenSpaceRules::set_all_directions(
+            &mut rules_map,
+            vec![TileType::Ground, TileType::Tree, TileType::Chest],
+        );
         allowed_neighbors.insert(TileType::Tree, rules_map.clone());
         rules_map.clear();
 
         ////////////////////////////////////////////////////////////////////////////
         // CHEST
-        OpenSpaceRules::set_all_directions(&mut rules_map, vec![TileType::Ground]);
+        OpenSpaceRules::set_all_directions(
+            &mut rules_map,
+            vec![TileType::Ground, TileType::Tree, TileType::Chest],
+        );
         allowed_neighbors.insert(TileType::Chest, rules_map.clone());
         rules_map.clear();
 
         ////////////////////////////////////////////////////////////////////////////
         // FOUNTAIN CENTER
+        //OpenSpaceRules::set_all_directions(&mut rules_map, vec![TileType::Ground, TileType::FountainCenter]);
         rules_map.insert(
             Direction::Front,
             vec![TileType::FountainEdge1, TileType::FountainCenter],
@@ -152,7 +187,10 @@ impl Default for OpenSpaceRules {
         ////////////////////////////////////////////////////////////////////////////
         // FOUNTAIN EDGE1 (Top edge - expandable horizontally)
         rules_map.insert(Direction::Front, vec![TileType::Ground]);
-        rules_map.insert(Direction::Back, vec![TileType::FountainCenter]);
+        rules_map.insert(
+            Direction::Back,
+            vec![TileType::FountainCenter, TileType::FountainEdge4],
+        );
         rules_map.insert(
             Direction::Right,
             vec![TileType::FountainEdge1, TileType::FountainCorner2],
@@ -175,7 +213,10 @@ impl Default for OpenSpaceRules {
             vec![TileType::FountainEdge2, TileType::FountainCorner4],
         );
         rules_map.insert(Direction::Right, vec![TileType::Ground]);
-        rules_map.insert(Direction::Left, vec![TileType::FountainCenter]);
+        rules_map.insert(
+            Direction::Left,
+            vec![TileType::FountainCenter, TileType::FountainEdge3],
+        );
         allowed_neighbors.insert(TileType::FountainEdge2, rules_map.clone());
         rules_map.clear();
 
@@ -189,14 +230,20 @@ impl Default for OpenSpaceRules {
             Direction::Back,
             vec![TileType::FountainEdge3, TileType::FountainCorner3],
         );
-        rules_map.insert(Direction::Right, vec![TileType::FountainCenter]);
+        rules_map.insert(
+            Direction::Right,
+            vec![TileType::FountainCenter, TileType::FountainEdge2],
+        );
         rules_map.insert(Direction::Left, vec![TileType::Ground]);
         allowed_neighbors.insert(TileType::FountainEdge3, rules_map.clone());
         rules_map.clear();
 
         ////////////////////////////////////////////////////////////////////////////
         // FOUNTAIN EDGE4 (Bottom edge - expandable horizontally)
-        rules_map.insert(Direction::Front, vec![TileType::FountainCenter]);
+        rules_map.insert(
+            Direction::Front,
+            vec![TileType::FountainCenter, TileType::FountainEdge1],
+        );
         rules_map.insert(Direction::Back, vec![TileType::Ground]);
         rules_map.insert(
             Direction::Right,
@@ -212,10 +259,10 @@ impl Default for OpenSpaceRules {
         let mut weights = HashMap::new();
         for tile in TileType::iter() {
             let weight = match tile {
-                TileType::Ground => 0.2,
-                TileType::Tree => 0.1,
-                TileType::Chest => 0.01,
-                TileType::FountainCenter => 0.345678,
+                TileType::Ground => 0.3,
+                TileType::Tree => 0.2,
+                TileType::Chest => 0.1,
+                TileType::FountainCenter => 0.5,
                 TileType::FountainCorner1 => 0.34567,
                 TileType::FountainCorner2 => 0.3456,
                 TileType::FountainCorner3 => 0.345,
@@ -224,7 +271,6 @@ impl Default for OpenSpaceRules {
                 TileType::FountainEdge2 => 0.338,
                 TileType::FountainEdge3 => 0.337,
                 TileType::FountainEdge4 => 0.336,
-                TileType::Empty => 0.00001,
             };
             weights.insert(tile, weight);
         }

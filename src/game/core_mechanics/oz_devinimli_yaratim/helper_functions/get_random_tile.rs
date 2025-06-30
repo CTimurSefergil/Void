@@ -19,10 +19,10 @@ where
     let mut random = rng.random_range(0.0..total_weight);
     for &tile in valid_tiles {
         let weight = *rules.weights().get(&tile).unwrap_or(&1.0);
-        if random <= weight {
+        random -= weight;
+        if random <= 0.0 {
             return tile;
         }
-        random -= weight;
     }
 
     valid_tiles[0]

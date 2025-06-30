@@ -23,7 +23,7 @@ impl Default for GenerationSettings {
     fn default() -> Self {
         Self {
             cell_edge_length: 9,
-            total_cells_on_edge: 21,
+            total_cells_on_edge: 17,
             spawn_distance: 0.7,
         }
     }
@@ -316,10 +316,6 @@ fn update_tile_visuals(
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
-                }
-
-                TileType::Empty => {
-                    commands.entity(entity).remove::<SceneRoot>();
                 }
             };
         }

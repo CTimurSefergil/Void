@@ -8,10 +8,10 @@ use bevy::{
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::{
     odycore::{
-        cell::{CellSpatialIndex, initialize_new_cells, update_spatial_index},
+        cell::{CellSpatialIndex, update_spatial_index},
         open_space::{
             OpenSpacePropagationQueue, collapse_lowest_entropy_open_space_cell,
-            propagate_open_space_constraints,
+            initialize_new_cells, propagate_open_space_constraints,
         },
     },
     odyrules::open_space_rules::OpenSpaceRules,
@@ -38,7 +38,6 @@ pub fn plugin(app: &mut App) {
         );
 }
 
-// Run condition: only allow collapse if the queue is empty
 fn propagation_queue_empty(queue: Res<OpenSpacePropagationQueue>) -> bool {
     queue.queue.is_empty()
 }
