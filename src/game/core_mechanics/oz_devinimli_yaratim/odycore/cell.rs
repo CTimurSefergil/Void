@@ -42,6 +42,10 @@ impl Cell {
             self.entropy = self.valid_tiles.len() as i32;
         }
     }
+
+    pub fn is_contradicted(&mut self) -> bool {
+        self.valid_tiles.is_empty()
+    }
 }
 
 pub fn update_spatial_index(
@@ -49,21 +53,6 @@ pub fn update_spatial_index(
     added_cells: Query<(Entity, &Cell), Added<Cell>>,
     mut removed_cells: RemovedComponents<Cell>,
 ) {
-    // PSEUDO CODE for update_spatial_index function:
-
-    // 1. Handle newly added cells:
-    //    a. Iterate through all entities that have Cell component added this frame
-    //    b. For each entity-cell pair:
-    //       - Insert mapping from cell's position to entity in spatial index grid
-    //       - This allows O(1) lookup of entities by their grid coordinates
-
-    // 2. Handle removed cells:
-    //    a. Iterate through all entities that had Cell component removed this frame
-    //    b. For each removed entity:
-    //       - Remove all grid entries that map to this entity
-    //       - Use retain to filter out entries where stored entity matches removed entity
-    //       - This prevents dangling references in the spatial index
-
     for (entity, cell) in added_cells.iter() {
         spatial_index.grid.insert(cell.position, entity);
     }

@@ -200,7 +200,8 @@ fn update_tile_visuals(
                         x: settings.cell_edge_length as f32,
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
-                    });
+                    })
+                    .with_rotation(Quat::from_rotation_y(0.5 * std::f32::consts::PI));
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
@@ -216,7 +217,8 @@ fn update_tile_visuals(
                         x: settings.cell_edge_length as f32,
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
-                    });
+                    })
+                    .with_rotation(Quat::from_rotation_y(1.0 * std::f32::consts::PI));
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
@@ -248,7 +250,8 @@ fn update_tile_visuals(
                         x: settings.cell_edge_length as f32,
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
-                    });
+                    })
+                    .with_rotation(Quat::from_rotation_y(1.5 * std::f32::consts::PI));
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
@@ -280,7 +283,8 @@ fn update_tile_visuals(
                         x: settings.cell_edge_length as f32,
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
-                    });
+                    })
+                    .with_rotation(Quat::from_rotation_y(0.5 * std::f32::consts::PI));
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
@@ -296,7 +300,8 @@ fn update_tile_visuals(
                         x: settings.cell_edge_length as f32,
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
-                    });
+                    })
+                    .with_rotation(Quat::from_rotation_y(1.5 * std::f32::consts::PI));
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
@@ -312,7 +317,8 @@ fn update_tile_visuals(
                         x: settings.cell_edge_length as f32,
                         y: settings.cell_edge_length as f32,
                         z: settings.cell_edge_length as f32,
-                    });
+                    })
+                    .with_rotation(Quat::from_rotation_y(1.0 * std::f32::consts::PI));
                     commands
                         .entity(entity)
                         .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));

@@ -34,7 +34,7 @@ fn update_camera(
 
     camera.translation = Transform::from_translation(Vec3 {
         x: player.translation.x,
-        y: player.translation.y + 200.0,
+        y: player.translation.y + 3.0,
         z: player.translation.z,
     })
     .translation

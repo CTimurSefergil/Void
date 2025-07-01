@@ -20,7 +20,7 @@ pub struct TileModels {
 
 fn setup_tile_resources(mut commands: Commands, asset_server: Res<AssetServer>) {
     let tile_models = TileModels {
-        ground: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/wallBlock.glb")),
+        ground: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/road.glb")),
         tree: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/tree.glb")),
         chest: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/rockWide.glb")),
         fountain_center: asset_server

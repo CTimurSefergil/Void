@@ -1,13 +1,11 @@
 use std::collections::VecDeque;
 
-use bevy::
-    ecs::{
-        entity::Entity,
-        query::Added,
-        resource::Resource,
-        system::{Query, Res, ResMut},
-    }
-;
+use bevy::ecs::{
+    entity::Entity,
+    query::Added,
+    resource::Resource,
+    system::{Query, Res, ResMut},
+};
 use rand::seq::IteratorRandom;
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::{
@@ -16,10 +14,7 @@ use crate::game::core_mechanics::oz_devinimli_yaratim::{
         get_random_tile::get_random_tile,
     },
     odycore::cell::{Cell, CellSpatialIndex},
-    odyrules::{
-        commons::DIRECTION_VECTORS,
-        open_space_rules::OpenSpaceRules,
-    },
+    odyrules::{commons::DIRECTION_VECTORS, open_space_rules::OpenSpaceRules},
 };
 
 #[derive(Resource, Default)]
@@ -54,14 +49,9 @@ pub fn propagate_open_space_constraints(
     mut cells: Query<&mut Cell>,
 ) {
     while let Some(entity) = wfc_queue.queue.pop_front() {
-        println!("Got Cell");
         let (is_collapsed, tile_type, position) = {
             if let Ok(cell) = cells.get_mut(entity) {
-                (
-                    cell.is_collapsed,
-                    cell.tile_type,
-                    cell.position,
-                )
+                (cell.is_collapsed, cell.tile_type, cell.position)
             } else {
                 continue;
             }
@@ -84,12 +74,14 @@ pub fn propagate_open_space_constraints(
                                 rules.as_ref(),
                             );
                             neighbor_cell.update_entropy();
-
+                            if neighbor_cell.is_contradicted() {
+                                println!("Yeah fuck off");
+                            }
                         }
                     }
                 }
             }
-        } 
+        }
     }
 }
 
