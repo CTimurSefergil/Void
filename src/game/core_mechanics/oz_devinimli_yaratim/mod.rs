@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 pub mod cells;
-pub mod helper_functions;
 pub mod odycore;
 pub mod odyrules;
 pub mod tiles_meshes_models;

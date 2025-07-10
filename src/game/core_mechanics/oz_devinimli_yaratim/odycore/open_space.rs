@@ -9,12 +9,11 @@ use bevy::ecs::{
 use rand::seq::IteratorRandom;
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::{
-    helper_functions::{
-        filter_valid_tiles::filter_valid_tiles, get_opposite_direction::get_opposite_direction,
-        get_random_tile::get_random_tile,
+    cells::{Cell, CellSpatialIndex},
+    odyrules::{
+        commons::{DIRECTION_VECTORS, Direction, Rules, TileType},
+        open_space_rules::OpenSpaceRules,
     },
-    odycore::cell::{Cell, CellSpatialIndex},
-    odyrules::{commons::DIRECTION_VECTORS, open_space_rules::OpenSpaceRules},
 };
 
 #[derive(Resource, Default)]
@@ -42,13 +41,37 @@ pub fn initialize_new_cells(
     }
 }
 
+pub fn filter_valid_tiles<T>(
+    valid_tiles: &mut Vec<TileType>,
+    neighbor_tile: TileType,
+    direction: Direction,
+    rules: &T,
+) where
+    T: Rules,
+{
+    if let Some(allowed_for_direction) = rules.allowed_neighbors().get(&neighbor_tile) {
+        if let Some(allowed_tiles) = allowed_for_direction.get(&direction) {
+            valid_tiles.retain(|tile| allowed_tiles.contains(tile));
+        }
+    }
+}
+
+pub fn get_opposite_direction(direction: Direction) -> Direction {
+    match direction {
+        Direction::Front => Direction::Back,
+        Direction::Back => Direction::Front,
+        Direction::Right => Direction::Left,
+        Direction::Left => Direction::Right,
+    }
+}
+
 pub fn propagate_open_space_constraints(
-    mut wfc_queue: ResMut<OpenSpacePropagationQueue>,
+    mut open_space: ResMut<OpenSpacePropagationQueue>,
     rules: Res<OpenSpaceRules>,
     spatial_index: Res<CellSpatialIndex>,
     mut cells: Query<&mut Cell>,
 ) {
-    while let Some(entity) = wfc_queue.queue.pop_front() {
+    while let Some(entity) = open_space.queue.pop_front() {
         let (is_collapsed, tile_type, position) = {
             if let Ok(cell) = cells.get_mut(entity) {
                 (cell.is_collapsed, cell.tile_type, cell.position)
@@ -74,8 +97,13 @@ pub fn propagate_open_space_constraints(
                                 rules.as_ref(),
                             );
                             neighbor_cell.update_entropy();
+
                             if neighbor_cell.is_contradicted() {
-                                println!("Yeah fuck off");
+                                println!("lv u");
+                                neighbor_cell.tile_type = Some(TileType::Ground);
+                                neighbor_cell.is_collapsed = true;
+                                neighbor_cell.entropy = 0;
+                                open_space.queue.push_back(*neighbor_entity);
                             }
                         }
                     }
@@ -85,8 +113,36 @@ pub fn propagate_open_space_constraints(
     }
 }
 
+pub fn get_random_tile<T>(rules: &T, valid_tiles: &[TileType]) -> TileType
+where
+    T: Rules,
+{
+    use rand::prelude::*;
+
+    if valid_tiles.is_empty() {
+        return TileType::Ground;
+    }
+
+    let mut rng = rand::rng();
+    let total_weight: f32 = valid_tiles
+        .iter()
+        .map(|t| *rules.weights().get(t).unwrap_or(&1.0))
+        .sum();
+
+    let mut random = rng.random_range(0.0..total_weight);
+    for &tile in valid_tiles {
+        let weight = *rules.weights().get(&tile).unwrap_or(&1.0);
+        random -= weight;
+        if random <= 0.0 {
+            return tile;
+        }
+    }
+
+    valid_tiles[0]
+}
+
 pub fn collapse_lowest_entropy_open_space_cell(
-    mut open_space_queue: ResMut<OpenSpacePropagationQueue>,
+    mut open_space: ResMut<OpenSpacePropagationQueue>,
     mut cells: Query<(Entity, &mut Cell)>,
     open_space_rules: Res<OpenSpaceRules>,
 ) {
@@ -118,7 +174,7 @@ pub fn collapse_lowest_entropy_open_space_cell(
             cell.tile_type = Some(tile);
             cell.is_collapsed = true;
             cell.entropy = 0;
-            open_space_queue.queue.push_back(entity);
+            open_space.queue.push_back(entity);
         }
     }
 }

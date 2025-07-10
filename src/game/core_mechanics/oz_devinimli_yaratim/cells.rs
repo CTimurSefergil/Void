@@ -1,16 +1,14 @@
-use bevy::prelude::*;
+use bevy::{platform::collections::HashMap, prelude::*};
 use std::{collections::HashSet, time::Duration};
 
 use crate::game::{
-    core_mechanics::oz_devinimli_yaratim::{
-        odycore::cell::Cell,
-        odyrules::{commons::TileType, open_space_rules::OpenSpaceRules},
-        tiles_meshes_models::TileModels,
+    core_mechanics::oz_devinimli_yaratim::odyrules::{
+        commons::TileType, open_space_rules::OpenSpaceRules,
     },
     spawn::player::Player,
 };
 const UPDATE_INTERVAL_MS: u64 = 200;
-const DESPAWN_INTERVAL_MS: u64 = 1000;
+const DESPAWN_INTERVAL_MS: u64 = 200;
 
 #[derive(Resource)]
 pub struct GenerationSettings {
@@ -29,10 +27,58 @@ impl Default for GenerationSettings {
     }
 }
 
+#[derive(Resource, Default)]
+pub struct CellSpatialIndex {
+    pub grid: HashMap<(i32, i32), Entity>,
+}
+
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<OpenSpaceRules>()
-        .init_resource::<GenerationSettings>()
-        .add_systems(Update, (create_cells, destroy_cells, update_tile_visuals));
+    app.init_resource::<GenerationSettings>()
+        .init_resource::<CellSpatialIndex>()
+        .add_systems(
+            Update,
+            (create_cells, update_spatial_index, destroy_cells).chain(),
+        );
+}
+
+#[derive(Component, Debug)]
+pub struct Cell {
+    pub is_collapsed: bool,
+    pub tile_type: Option<TileType>,
+    pub entropy: i32,
+    pub valid_tiles: Vec<TileType>,
+    pub position: (i32, i32),
+}
+
+impl Cell {
+    pub fn new(all_tiles: &[TileType], position: (i32, i32)) -> Self {
+        Self {
+            is_collapsed: false,
+            tile_type: None,
+            entropy: all_tiles.len() as i32,
+            valid_tiles: all_tiles.to_vec(),
+            position,
+        }
+    }
+
+    pub fn update_entropy(&mut self) {
+        if !self.is_collapsed {
+            self.entropy = self.valid_tiles.len() as i32;
+        }
+    }
+
+    pub fn is_contradicted(&mut self) -> bool {
+        self.valid_tiles.is_empty()
+    }
+}
+
+pub fn update_spatial_index(
+    mut spatial_index: ResMut<CellSpatialIndex>,
+    added_cells: Query<(Entity, &Cell), Added<Cell>>,
+) {
+    for (entity, cell) in added_cells.iter() {
+        spatial_index.grid.insert(cell.position, entity);
+    }
 }
 
 #[derive(Component)]
@@ -100,6 +146,7 @@ fn destroy_cells(
     mut last_update: Local<Duration>,
     time: Res<Time>,
     settings: Res<GenerationSettings>,
+    mut spatial_index: ResMut<CellSpatialIndex>,
 ) {
     let now = time.elapsed();
     if *last_update + Duration::from_millis(DESPAWN_INTERVAL_MS) > now {
@@ -112,221 +159,11 @@ fn destroy_cells(
 
     for (entity, transform) in cells.iter() {
         if player_pos.translation.distance(transform.translation) > despawn_distance {
+            spatial_index.grid.remove(&(
+                transform.translation.x as i32,
+                transform.translation.z as i32,
+            ));
             commands.entity(entity).despawn();
         }
     }
 }
-
-fn update_tile_visuals(
-    mut commands: Commands,
-    changed_cells: Query<(Entity, &Cell, &Transform), Changed<Cell>>,
-    tile_models: Res<TileModels>,
-    settings: Res<GenerationSettings>,
-) {
-    for (entity, cell, transform) in changed_cells.iter() {
-        if let Some(tile_type) = cell.tile_type {
-            match tile_type {
-                TileType::Ground => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.ground.clone()), transform));
-                }
-
-                TileType::Tree => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.tree.clone()), transform));
-                }
-
-                TileType::Chest => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.chest.clone()), transform));
-                }
-
-                TileType::FountainCenter => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_center.clone()), transform));
-                }
-
-                TileType::FountainCorner1 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    })
-                    .with_rotation(Quat::from_rotation_y(0.5 * std::f32::consts::PI));
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
-                }
-
-                TileType::FountainCorner2 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    })
-                    .with_rotation(Quat::from_rotation_y(1.0 * std::f32::consts::PI));
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
-                }
-
-                TileType::FountainCorner3 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
-                }
-
-                TileType::FountainCorner4 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    })
-                    .with_rotation(Quat::from_rotation_y(1.5 * std::f32::consts::PI));
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_corner.clone()), transform));
-                }
-
-                TileType::FountainEdge1 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    });
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
-                }
-
-                TileType::FountainEdge2 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    })
-                    .with_rotation(Quat::from_rotation_y(0.5 * std::f32::consts::PI));
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
-                }
-
-                TileType::FountainEdge3 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    })
-                    .with_rotation(Quat::from_rotation_y(1.5 * std::f32::consts::PI));
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
-                }
-
-                TileType::FountainEdge4 => {
-                    let transform = Transform::from_translation(Vec3::new(
-                        0.0 + transform.translation.x,
-                        0.0,
-                        0.0 + transform.translation.z,
-                    ))
-                    .with_scale(Vec3 {
-                        x: settings.cell_edge_length as f32,
-                        y: settings.cell_edge_length as f32,
-                        z: settings.cell_edge_length as f32,
-                    })
-                    .with_rotation(Quat::from_rotation_y(1.0 * std::f32::consts::PI));
-                    commands
-                        .entity(entity)
-                        .insert((SceneRoot(tile_models.fountain_edge.clone()), transform));
-                }
-            };
-        }
-    }
-}
-
-////////////////////////
-// YÜZDE ON DESEM YETER

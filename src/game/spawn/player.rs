@@ -35,7 +35,7 @@ fn spawn_player(
             Visibility::default(),
             Player,
         ))
-        .with_children(|parent| {
+        /*.with_children(|parent| {
             parent.spawn((
                 Transform::from_translation(Vec3::new(0.0, 0.0, 0.0))
                     .with_rotation(Quat::from_rotation_x(0.5 * std::f32::consts::PI)),
@@ -43,5 +43,5 @@ fn spawn_player(
                 Mesh3d(ball_mesh.clone()),
                 MeshMaterial3d(ball_material),
             ));
-        });
+        })*/;
 }

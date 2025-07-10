@@ -1,0 +1,11 @@
+(
+    tiles: {
+        "Ground": (
+            weight: 0.3,
+            neighbors: {
+                "Front": ["Tree", "Fountain"],
+                "Back": ["Ground", "Wall"]
+            }
+        )
+    }
+)
