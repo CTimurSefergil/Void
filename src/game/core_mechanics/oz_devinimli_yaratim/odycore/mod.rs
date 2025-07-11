@@ -8,7 +8,7 @@ use bevy::{
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::{
     cells::CellSpatialIndex, odycore::open_space::{
-        collapse_lowest_entropy_open_space_cell, initialize_new_cells, propagate_open_space_constraints, OpenSpacePropagationQueue
+        collapse_lowest_entropy_open_space_cell, initialize_new_cells, propagate_open_space_constraints, update_spatial_index, OpenSpacePropagationQueue
     }, odyrules::open_space_rules::OpenSpaceRules
 };
 
@@ -21,6 +21,7 @@ pub fn plugin(app: &mut App) {
         .add_systems(
             Update,
             (
+                update_spatial_index,
                 initialize_new_cells,
                 propagate_open_space_constraints,
                 collapse_lowest_entropy_open_space_cell.run_if(propagation_queue_empty),

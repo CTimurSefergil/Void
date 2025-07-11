@@ -21,6 +21,15 @@ pub struct OpenSpacePropagationQueue {
     pub queue: VecDeque<Entity>,
 }
 
+pub fn update_spatial_index(
+    mut spatial_index: ResMut<CellSpatialIndex>,
+    added_cells: Query<(Entity, &Cell), Added<Cell>>,
+) {
+    for (entity, cell) in added_cells.iter() {
+        spatial_index.grid.insert(cell.position, entity);
+    }
+}
+
 pub fn initialize_new_cells(
     mut wfc_queue: ResMut<OpenSpacePropagationQueue>,
     added_cells: Query<&Cell, Added<Cell>>,

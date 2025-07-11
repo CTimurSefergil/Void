@@ -35,10 +35,7 @@ pub struct CellSpatialIndex {
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<GenerationSettings>()
         .init_resource::<CellSpatialIndex>()
-        .add_systems(
-            Update,
-            (create_cells, update_spatial_index, destroy_cells).chain(),
-        );
+        .add_systems(Update, (create_cells, destroy_cells).chain());
 }
 
 #[derive(Component, Debug)]
@@ -69,15 +66,6 @@ impl Cell {
 
     pub fn is_contradicted(&mut self) -> bool {
         self.valid_tiles.is_empty()
-    }
-}
-
-pub fn update_spatial_index(
-    mut spatial_index: ResMut<CellSpatialIndex>,
-    added_cells: Query<(Entity, &Cell), Added<Cell>>,
-) {
-    for (entity, cell) in added_cells.iter() {
-        spatial_index.grid.insert(cell.position, entity);
     }
 }
 
