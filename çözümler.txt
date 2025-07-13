@@ -1,1 +1,1 @@
-Sorun Köşelerde
+Köşelerdeki sorunlar aslında kuralların esnetilmesiyle(FountainCorner) çözülebilir ama şimdilik bu çözümü düşünmüyorum.

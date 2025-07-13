@@ -15,7 +15,7 @@ fn spawn_enemy(
     mut material_assets: ResMut<Assets<StandardMaterial>>,
 ) {
     let ball_mesh = mesh_assets.add(Cuboid::default());
-    let color = Color::srgb(0.05, 0.5, 0.6);
+    let color = Color::srgb(0.8, 0.5, 0.6);
     let ball_material = material_assets.add(StandardMaterial {
         base_color: color,
         ..Default::default()
