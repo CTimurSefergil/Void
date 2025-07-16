@@ -7,9 +7,12 @@ use bevy::{
 };
 
 use crate::game::core_mechanics::oz_devinimli_yaratim::{
-    cells::CellSpatialIndex, odycore::open_space::{
-        collapse_lowest_entropy_open_space_cell, initialize_new_cells, propagate_open_space_constraints, update_spatial_index, OpenSpacePropagationQueue
-    }, odyrules::open_space_rules::OpenSpaceRules
+    cells::CellSpatialIndex,
+    odycore::open_space::{
+        OpenSpacePropagationQueue, collapse_lowest_entropy_open_space_cell, initialize_new_cells,
+        propagate_open_space_constraints, update_spatial_index,
+    },
+    odyrules::open_space_rules::OpenSpaceRules,
 };
 
 pub mod open_space;

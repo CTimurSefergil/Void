@@ -3,7 +3,6 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct Enemy;
 
-
 // AI COMPONENTS
 #[derive(Component)]
 pub struct PlayerSeen(pub bool);

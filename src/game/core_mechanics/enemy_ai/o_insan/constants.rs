@@ -1,0 +1,1 @@
+pub const PLAYER_SIGHT_DISTANCE: f32 = 50.0;

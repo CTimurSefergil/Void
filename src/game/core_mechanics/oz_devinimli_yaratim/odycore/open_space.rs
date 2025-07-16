@@ -23,7 +23,7 @@ pub struct OpenSpacePropagationQueue {
 
 pub fn update_spatial_index(
     mut spatial_index: ResMut<CellSpatialIndex>,
-    added_cells: Query<(Entity, &Cell), Added<Cell>>
+    added_cells: Query<(Entity, &Cell), Added<Cell>>,
 ) {
     for (entity, cell) in added_cells.iter() {
         spatial_index.grid.insert(cell.position, entity);
