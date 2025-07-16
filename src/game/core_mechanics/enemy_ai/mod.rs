@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 
-pub mod behavior_trees;
+pub mod o_insan;
+pub mod common;
 
-pub(super) fn plugin(app: &mut App) {}
+pub(super) fn plugin(app: &mut App) {
+    app.add_plugins(o_insan::plugin);
+}

@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 
-use crate::game::spawn::enemies::common::Enemy;
+use crate::game::core_mechanics::enemy_ai::common::{Enemy, Suspicious, PlayerInRange};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_enemy);
 }
 
 #[derive(Component)]
-struct OInsan;
+pub struct OInsan;
 
 fn spawn_enemy(
     mut commands: Commands,
@@ -37,7 +37,9 @@ fn spawn_enemy(
             MeshMaterial3d(ball_material.clone()),
             Visibility::default(),
             Enemy,
-            OInsan
+            OInsan,
+            PlayerInRange(false),
+            Suspicious(false)
         ))
        ;
 }
