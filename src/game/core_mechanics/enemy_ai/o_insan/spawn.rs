@@ -1,7 +1,5 @@
 use bevy::prelude::*;
 
-use crate::game::core_mechanics::enemy_ai::common_components::{Enemy, PlayerInRange, Suspicious};
-
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_enemy);
 }
@@ -35,9 +33,6 @@ fn spawn_enemy(
         Mesh3d(ball_mesh),
         MeshMaterial3d(ball_material.clone()),
         Visibility::default(),
-        Enemy,
         OInsan,
-        PlayerInRange(false),
-        Suspicious(false),
     ));
 }
