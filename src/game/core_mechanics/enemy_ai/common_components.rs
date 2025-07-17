@@ -15,3 +15,6 @@ pub struct PlayerInRange(pub bool);
 
 #[derive(Component)]
 pub struct Suspicious(pub bool);
+
+#[derive(Component)]
+pub struct Depressed(pub bool);

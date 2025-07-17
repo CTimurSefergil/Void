@@ -9,25 +9,17 @@ use crate::game::{
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (update_o_insan, hell_yeah));
+    app.add_systems(Update, update_o_insan);
 }
 
 fn update_o_insan(
     player: Single<&Transform, With<Player>>,
-    o_insan: Single<(&mut Suspicious, &PlayerInRange, &Transform), With<OInsan>>,
+    o_insan: Single<(&mut Suspicious, &mut PlayerInRange, &Transform), With<OInsan>>,
 ) {
-    let (mut suspicious, _player_in_range, enemy_transform) = o_insan.into_inner();
+    let (mut _suspicious, mut player_in_range, enemy_transform) = o_insan.into_inner();
     if player.translation.distance(enemy_transform.translation) < PLAYER_SIGHT_DISTANCE {
-        suspicious.0 = true;
+        player_in_range.0 = true;
     } else {
-        suspicious.0 = false;
-    }
-}
-
-fn hell_yeah(o_insan: Single<(&mut Suspicious, &PlayerInRange, &Transform), With<OInsan>>) {
-    if o_insan.0.0 == true {
-        println!("HELL YEAH");
-    } else {
-        println!("HELL NOT NOT YEEAAAAHH");
+        player_in_range.0 = false;
     }
 }
