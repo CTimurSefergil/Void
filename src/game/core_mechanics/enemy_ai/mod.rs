@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-pub mod common_events;
 pub mod o_insan;
 
 pub(super) fn plugin(app: &mut App) {

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 pub mod actions;
 pub mod constants;
+pub mod memory;
 pub mod spawn;
 pub mod update;
 
