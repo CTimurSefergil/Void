@@ -3,17 +3,25 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::game::core_mechanics::enemy_ai::{
-    common_events::PlayerInRange, o_insan::constants::DEBUG_UPDATE_MS
+    common_events::{Depressed, PlayerInRange}, o_insan::constants::DEBUG_UPDATE_MS
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, (slow_down).run_if(debug_update));
+    app.add_event::<SlowedDown>().add_observer(slow_down).add_observer(depress);
 }
 
-fn slow_down(mut events: EventReader<PlayerInRange>) {
-    for PlayerInRange {monster, last_seen} in events.read() {
-        println!("{:?}, {:?}", monster, last_seen);
-    }
+#[derive(Event)]
+struct SlowedDown {
+    monster: Entity
+}
+
+fn slow_down(trigger: Trigger<PlayerInRange>) {
+    let PlayerInRange {monster, last_seen} = trigger.event();
+    println!("{:?}, {:?}", monster, last_seen);
+}
+
+fn depress(trigger: Trigger<Depressed>) {
+    println!("ARABA");
 }
 
 fn debug_update(mut last_update: Local<Duration>, time: Res<Time>) -> bool {

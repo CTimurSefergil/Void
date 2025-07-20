@@ -108,7 +108,6 @@ pub fn propagate_open_space_constraints(
                             neighbor_cell.update_entropy();
 
                             if neighbor_cell.is_contradicted() {
-                                println!("lv u");
                                 neighbor_cell.tile_type = Some(TileType::Ground);
                                 neighbor_cell.is_collapsed = true;
                                 neighbor_cell.entropy = 0;

@@ -13,9 +13,9 @@ fn spawn_player(
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut material_assets: ResMut<Assets<StandardMaterial>>,
 ) {
-    let ball_mesh = mesh_assets.add(Extrusion::new(Annulus::new(14.0, 15.0), 20.0));
+    let _ball_mesh = mesh_assets.add(Extrusion::new(Annulus::new(14.0, 15.0), 20.0));
     let color = Color::srgb(0.05, 0.5, 0.6);
-    let ball_material = material_assets.add(StandardMaterial {
+    let _ball_material = material_assets.add(StandardMaterial {
         base_color: color,
         ..Default::default()
     });

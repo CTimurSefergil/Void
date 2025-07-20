@@ -2,10 +2,10 @@ use bevy::prelude::*;
 
 // AI EVENTS
 #[derive(Event)]
-pub struct PlayerSeen;
+pub struct _PlayerSeen;
 
 #[derive(Event)]
-pub struct PlayerHeard;
+pub struct _PlayerHeard;
 
 #[derive(Event)]
 pub struct PlayerInRange {
@@ -14,7 +14,7 @@ pub struct PlayerInRange {
 }
 
 #[derive(Event)]
-pub struct Suspicious;
+pub struct _Suspicious;
 
 #[derive(Event)]
 pub struct Depressed;
