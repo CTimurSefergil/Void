@@ -64,8 +64,8 @@ impl Default for OInsanAI {
             time_since_seen_player: 0.0,
 
             // Reasonable default values
-            movement_speed: 2.0,
-            detection_range: 10.0,
+            movement_speed: 10.0,
+            detection_range: 40.0,
         }
     }
 }

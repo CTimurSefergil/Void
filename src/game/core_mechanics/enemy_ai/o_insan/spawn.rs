@@ -11,28 +11,27 @@ use bevy::prelude::*;
 /// - Centralizes entity creation
 /// - Ensures all required components are added
 /// - Makes it easy to create multiple AIs with different settings
-pub fn spawn_simple_ai(
+pub fn spawn_o_insan(
     commands: &mut Commands,
     position: Vec3,
     health: f32,
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut material_assets: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>
 ) -> Entity {
-    let ball_mesh = mesh_assets.add(Cuboid::default());
+    let _ball_mesh = mesh_assets.add(Cuboid::default());
     let color = Color::srgb(0.8, 0.5, 0.6);
-    let ball_material = material_assets.add(StandardMaterial {
+    let _ball_material = material_assets.add(StandardMaterial {
         base_color: color,
         ..Default::default()
     });
     commands
-        .spawn((
+        .spawn((SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/monster.glb"))),
             OInsanAI {
                 health,
                 max_health: health,
                 ..Default::default()
             },
-            Mesh3d(ball_mesh),
-            MeshMaterial3d(ball_material.clone()),
             Transform::from_translation(position),
             Name::new("TheHuman"),
         ))

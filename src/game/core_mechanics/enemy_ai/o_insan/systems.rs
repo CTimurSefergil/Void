@@ -176,9 +176,6 @@ pub fn ai_movement_system(
                     let direction = (player_transform.translation - ai_transform.translation)
                         .normalize_or_zero();
                     ai_transform.translation += direction * movement_distance;
-
-                    // Face the player (optional - makes it look more natural)
-                    ai_transform.look_at(player_transform.translation, Vec3::Y);
                 }
             }
 
@@ -199,7 +196,7 @@ pub fn ai_movement_system(
             AIBehavior::Begging => {
                 // Stand still and face the player
                 if let Ok(player_transform) = player_query.single() {
-                    ai_transform.look_at(player_transform.translation, Vec3::Y);
+                    ai_transform.look_at(-player_transform.translation, Vec3::Y);
                 }
                 // No movement when begging
             }

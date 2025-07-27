@@ -115,11 +115,11 @@ impl Default for OpenSpaceRules {
         // 🌱 GROUND TILE RULES: Basic Walkable Surface
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Ground tile adjacency rules
-        /// - Ground can connect to other ground (continuous surfaces)
-        /// - Trees and chests can be placed on ground (natural placement)
-        /// - Specific fountain pieces can connect to ground (structure integration)
-        /// - Different fountain pieces allowed in different directions for proper assembly
+        // 📋 DESIGN NOTE: Ground tile adjacency rules
+        // - Ground can connect to other ground (continuous surfaces)
+        // - Trees and chests can be placed on ground (natural placement)
+        // - Specific fountain pieces can connect to ground (structure integration)
+        // - Different fountain pieces allowed in different directions for proper assembly
         
         rules_map.insert(
             Direction::Front,
@@ -172,10 +172,10 @@ impl Default for OpenSpaceRules {
         // 🌲 TREE TILE RULES: Natural Decorative Elements
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Tree placement rules
-        /// - Trees are decorative and don't connect to fountain structures
-        /// - Can be placed next to ground, other trees, and chests
-        /// - Same rules in all directions (symmetric placement)
+        // 📋 DESIGN NOTE: Tree placement rules
+        // - Trees are decorative and don't connect to fountain structures
+        // - Can be placed next to ground, other trees, and chests
+        // - Same rules in all directions (symmetric placement)
         
         OpenSpaceRules::set_all_directions(
             &mut rules_map,
@@ -188,10 +188,10 @@ impl Default for OpenSpaceRules {
         // 📦 CHEST TILE RULES: Interactive Objects
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Chest placement rules
-        /// - Chests are standalone interactive objects
-        /// - Same placement rules as trees (decorative elements)
-        /// - Don't integrate with fountain structures
+        // 📋 DESIGN NOTE: Chest placement rules
+        // - Chests are standalone interactive objects
+        // - Same placement rules as trees (decorative elements)
+        // - Don't integrate with fountain structures
         
         OpenSpaceRules::set_all_directions(
             &mut rules_map,
@@ -204,10 +204,10 @@ impl Default for OpenSpaceRules {
         // ⛲ FOUNTAIN CENTER RULES: Multi-Part Structure Core
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Fountain center connection rules
-        /// - Center connects only to fountain edges and other centers
-        /// - Each direction connects to specific edge types for proper assembly
-        /// - No direct connection to ground (edges provide that interface)
+        // 📋 DESIGN NOTE: Fountain center connection rules
+        // - Center connects only to fountain edges and other centers
+        // - Each direction connects to specific edge types for proper assembly
+        // - No direct connection to ground (edges provide that interface)
         
         rules_map.insert(
             Direction::Front,
@@ -232,11 +232,11 @@ impl Default for OpenSpaceRules {
         // 🔲 FOUNTAIN CORNER RULES: Structure Corner Pieces
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Fountain corner connection logic
-        /// - Each corner has specific orientation and connection rules
-        /// - Corner1 = Top-left, Corner2 = Top-right, etc.
-        /// - Internal sides connect to edges/corners, external sides connect to ground
-        /// - Precise rules ensure proper fountain assembly
+        // 📋 DESIGN NOTE: Fountain corner connection logic
+        // - Each corner has specific orientation and connection rules
+        // - Corner1 = Top-left, Corner2 = Top-right, etc.
+        // - Internal sides connect to edges/corners, external sides connect to ground
+        // - Precise rules ensure proper fountain assembly
         
         // FOUNTAIN CORNER1 (Top-left corner)
         rules_map.insert(Direction::Front, vec![TileType::Ground]); // External side to ground
@@ -298,11 +298,11 @@ impl Default for OpenSpaceRules {
         // ━ FOUNTAIN EDGE RULES: Structure Edge Pieces
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Fountain edge connection logic
-        /// - Edge pieces form the perimeter of fountain structures
-        /// - Each edge type can expand in specific directions
-        /// - Internal side connects to center/other edges, external to ground
-        /// - Expandable edges allow fountains of different sizes
+        // 📋 DESIGN NOTE: Fountain edge connection logic
+        // - Edge pieces form the perimeter of fountain structures
+        // - Each edge type can expand in specific directions
+        // - Internal side connects to center/other edges, external to ground
+        // - Expandable edges allow fountains of different sizes
         
         // FOUNTAIN EDGE1 (Top edge - expandable horizontally)
         rules_map.insert(Direction::Front, vec![TileType::Ground]); // External: to ground
@@ -376,13 +376,13 @@ impl Default for OpenSpaceRules {
         // ⚖️ WEIGHT SYSTEM: Spawn Probability Configuration
         // ====================================================================
         
-        /// 📋 DESIGN NOTE: Weight-based spawn probability
-        /// - Higher weights = more common in generated worlds
-        /// - Ground: Common base surface (30%)
-        /// - Tree: Common decoration (20%)  
-        /// - Chest: Uncommon interactive (10%)
-        /// - FountainCenter: Special structure trigger (50% - high to start fountains)
-        /// - Fountain pieces: Various weights to balance structure assembly
+        // 📋 DESIGN NOTE: Weight-based spawn probability
+        // - Higher weights = more common in generated worlds
+        // - Ground: Common base surface (30%)
+        // - Tree: Common decoration (20%)  
+        // - Chest: Uncommon interactive (10%)
+        // - FountainCenter: Special structure trigger (50% - high to start fountains)
+        // - Fountain pieces: Various weights to balance structure assembly
         
         let mut weights = HashMap::new();
         for tile in TileType::iter() {
