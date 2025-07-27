@@ -4,9 +4,17 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_player);
 }
 
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
 #[reflect(Component)]
-pub struct Player;
+pub struct Player {
+    pub has_weapon: bool, // Does the player have a weapon?
+}
+
+impl Default for Player {
+    fn default() -> Self {
+        Self { has_weapon: false }
+    }
+}
 
 fn spawn_player(
     mut commands: Commands,
@@ -33,7 +41,7 @@ fn spawn_player(
                 z: 5.0,
             }),
             Visibility::default(),
-            Player,
+        Player::default(),
         ))
         /*.with_children(|parent| {
             parent.spawn((
