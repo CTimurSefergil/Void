@@ -47,8 +47,7 @@ fn setup_ai_demo(
     mut commands: Commands,
     mesh_assets: ResMut<Assets<Mesh>>,
     material_assets: ResMut<Assets<StandardMaterial>>,
-        asset_server: Res<AssetServer>
-
+    asset_server: Res<AssetServer>,
 ) {
     // Create one AI with full health (will be angry)
     let _ai_entity = spawn_o_insan(
@@ -57,7 +56,7 @@ fn setup_ai_demo(
         100.0,
         mesh_assets,
         material_assets,
-        asset_server
+        asset_server,
     );
 
     println!("🎮 SIMPLE AI DEMO STARTED!");

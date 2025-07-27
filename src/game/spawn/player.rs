@@ -38,7 +38,7 @@ pub(super) fn plugin(app: &mut App) {
 #[reflect(Component)] // Enables Bevy editor support and runtime inspection
 pub struct Player {
     /// Whether the player currently has a weapon equipped
-    /// 
+    ///
     /// 📋 DESIGN NOTE: This affects AI behavior
     /// - AI becomes sorrowful when they see an armed player while chasing
     /// - Simple boolean keeps the logic straightforward
@@ -47,13 +47,13 @@ pub struct Player {
 
 impl Default for Player {
     /// 🎯 DEFAULT IMPLEMENTATION: Sensible Starting Values
-    /// 
+    ///
     /// 📋 BEST PRACTICE: Always provide sensible defaults
     /// - New players start without weapons (peaceful beginning)
     /// - Default values should represent the most common initial state
     fn default() -> Self {
-        Self { 
-            has_weapon: false // Players start peaceful, can acquire weapons later
+        Self {
+            has_weapon: false, // Players start peaceful, can acquire weapons later
         }
     }
 }
@@ -95,15 +95,13 @@ fn spawn_player(
             y: 5.0,
             z: 5.0,
         }),
-        
         // Visibility: Controls whether the entity is rendered
         // 📋 DESIGN NOTE: Player might be invisible for first-person feel
         Visibility::default(),
-        
         // Player component: Our custom player data
         Player::default(),
     ));
-    
+
     // 📋 COMMENTED OUT: Visual mesh rendering
     // The mesh creation code is commented out, suggesting the player
     // might be intended to be invisible (first-person style)

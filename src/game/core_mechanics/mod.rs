@@ -14,8 +14,8 @@
 
 use bevy::prelude::*;
 
-pub mod enemy_ai;            // AI behavior, emotions, and decision-making
-pub mod movement;            // Player movement and camera controls  
+pub mod enemy_ai; // AI behavior, emotions, and decision-making
+pub mod movement; // Player movement and camera controls
 pub mod oz_devinimli_yaratim; // Procedural world generation system
 
 /// 🎯 CORE MECHANICS PLUGIN: Game System Registration
@@ -26,7 +26,7 @@ pub mod oz_devinimli_yaratim; // Procedural world generation system
 /// - World generation should be available early for spawning entities
 /// - AI systems can reference player and world state
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(movement::plugin);            // Player controls and movement
+    app.add_plugins(movement::plugin); // Player controls and movement
     app.add_plugins(oz_devinimli_yaratim::plugin); // World generation
-    app.add_plugins(enemy_ai::plugin);            // AI behavior systems
+    app.add_plugins(enemy_ai::plugin); // AI behavior systems
 }

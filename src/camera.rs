@@ -43,7 +43,7 @@ pub(super) fn plugin(app: &mut App) {
 fn spawn_camera(mut commands: Commands) {
     // Add global directional lighting to the scene
     commands.spawn(DirectionalLight::default());
-    
+
     // Create the main 3D camera
     commands.spawn((
         Name::new("Camera"), // Useful for debugging and hierarchy viewing
@@ -53,7 +53,7 @@ fn spawn_camera(mut commands: Commands) {
             //clear_color: ClearColorConfig::Custom(Color::srgb(0.1, 0.6, 0.15)),
             ..Default::default()
         },
-        IsDefaultUiCamera, // This camera also handles UI rendering
+        IsDefaultUiCamera,     // This camera also handles UI rendering
         ClusterConfig::Single, // Optimize lighting calculations for single light
     ));
 }
@@ -83,7 +83,9 @@ fn update_camera(
 
     // Smoothly interpolate to target position
     // 📋 PERFORMANCE NOTE: Using lerp with time.delta_secs() ensures smooth movement
-    camera.translation = camera.translation.lerp(target_position, time.delta_secs() * 2.0);
+    camera.translation = camera
+        .translation
+        .lerp(target_position, time.delta_secs() * 2.0);
 }
 
 // ============================================================================
@@ -116,12 +118,12 @@ fn camera_look(
     // Convert current rotation to Euler angles for easier manipulation
     use EulerRot::YXZ;
     let (mut yaw, mut pitch, _) = camera.rotation.to_euler(YXZ);
-    
+
     // Apply mouse movement to rotation
     // 📋 PERFORMANCE NOTE: Negative values because mouse Y is inverted
     yaw -= mouse_motion.delta.x * dt * sensitivity;
     pitch -= mouse_motion.delta.y * dt * sensitivity;
-    
+
     // Clamp pitch to prevent camera from flipping upside down
     // 📋 BEST PRACTICE: Always clamp camera pitch for better user experience
     pitch = pitch.clamp(-1.57, 1.57); // Roughly -90° to +90°

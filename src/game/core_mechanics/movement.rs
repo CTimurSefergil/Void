@@ -22,7 +22,7 @@ use bevy::{
 use crate::game::spawn::player::Player;
 
 /// Movement speed constant - how fast the player moves in units per second
-/// 
+///
 /// 📋 BEST PRACTICE: Use constants for tweakable values
 /// - Easy to adjust gameplay feel
 /// - Centralized configuration
@@ -54,7 +54,7 @@ pub(super) fn plugin(app: &mut App) {
 // ============================================================================
 
 /// Event for controlling cursor grab state
-/// 
+///
 /// 📋 BEST PRACTICE: Use events for state changes
 /// - Decouples input detection from state application
 /// - Multiple systems can react to the same event
@@ -80,7 +80,7 @@ fn player_movement(
 ) {
     // Calculate movement intent from input
     let mut intent = Vec3::ZERO;
-    
+
     // Forward/Backward movement (W/S or Arrow Up/Down)
     if input.pressed(KeyCode::KeyW) || input.pressed(KeyCode::ArrowUp) {
         intent.z += 1.0; // Forward in local space
@@ -88,7 +88,7 @@ fn player_movement(
     if input.pressed(KeyCode::KeyS) || input.pressed(KeyCode::ArrowDown) {
         intent.z -= 1.0; // Backward in local space
     }
-    
+
     // Left/Right movement (A/D or Arrow Left/Right)
     if input.pressed(KeyCode::KeyA) || input.pressed(KeyCode::ArrowLeft) {
         intent.x -= 1.0; // Left in local space
@@ -101,8 +101,8 @@ fn player_movement(
     // 📋 CRITICAL: These 4 lines are essential for proper directional movement
     // Without them, movement would be global rather than relative to look direction
     let forward = player.forward().as_vec3() * intent.z; // Forward/backward in look direction
-    let right = player.right().as_vec3() * intent.x;     // Left/right relative to look direction
-    let mut to_move = forward + right;                   // Combine movement vectors
+    let right = player.right().as_vec3() * intent.x; // Left/right relative to look direction
+    let mut to_move = forward + right; // Combine movement vectors
     to_move.y = 0.0; // Keep movement on horizontal plane (no flying)
 
     // Apply movement with time-based speed
@@ -141,11 +141,11 @@ fn player_look(
     // Convert rotation to Euler angles for easier manipulation
     use EulerRot::YXZ;
     let (mut yaw, mut pitch, _) = player.rotation.to_euler(YXZ);
-    
+
     // Apply mouse movement to rotation
-    yaw -= mouse_motion.delta.x * dt * sensitivity;   // Horizontal mouse = yaw rotation
+    yaw -= mouse_motion.delta.x * dt * sensitivity; // Horizontal mouse = yaw rotation
     pitch -= mouse_motion.delta.y * dt * sensitivity; // Vertical mouse = pitch rotation
-    
+
     // Clamp pitch to prevent flipping upside down
     // 📋 BEST PRACTICE: Always clamp pitch for better user experience
     pitch = pitch.clamp(-1.57, 1.57); // Roughly -90° to +90°
@@ -167,15 +167,15 @@ fn player_look(
 /// - Observer pattern is more flexible than direct function calls
 fn apply_grab(grab: Trigger<GrabEvent>, mut window: Single<&mut Window, With<PrimaryWindow>>) {
     use bevy::window::CursorGrabMode;
-    
+
     if **grab {
         // Grab cursor for immersive gameplay
-        window.cursor_options.visible = false;           // Hide cursor
+        window.cursor_options.visible = false; // Hide cursor
         window.cursor_options.grab_mode = CursorGrabMode::Locked; // Lock to window
     } else {
         // Release cursor for UI interaction
-        window.cursor_options.visible = true;            // Show cursor
-        window.cursor_options.grab_mode = CursorGrabMode::None;   // Allow free movement
+        window.cursor_options.visible = true; // Show cursor
+        window.cursor_options.grab_mode = CursorGrabMode::None; // Allow free movement
     }
 }
 

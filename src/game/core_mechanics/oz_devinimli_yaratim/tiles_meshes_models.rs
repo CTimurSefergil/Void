@@ -23,24 +23,24 @@ use crate::game::core_mechanics::oz_devinimli_yaratim::{
 // ============================================================================
 
 /// Size constants for different model types
-/// 
+///
 /// 📋 DESIGN NOTE: Currently unused but preserved for future scaling needs
 /// - Could be used for dynamic model scaling
 /// - Helpful for collision detection systems
 /// - Maintains compatibility with legacy code
 pub const _GROUND: [f32; 3] = [4.8, 0.1, 4.8]; // Ground tile dimensions
 pub const _CORNER: [f32; 3] = [4.8, 5.0, 4.8]; // Corner structure dimensions
-pub const _CHEST: [f32; 3] = [1.5, 0.8, 1.0];  // Chest object dimensions
+pub const _CHEST: [f32; 3] = [1.5, 0.8, 1.0]; // Chest object dimensions
 
 /// 🎯 PLUGIN SETUP: Visual System Registration
-/// 
+///
 /// 📋 BEST PRACTICE: Separate setup from runtime systems
 /// - Startup system loads all assets once
 /// - Update system only runs when tile data changes
 /// - Efficient resource management
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, setup_tile_resources)  // Load 3D models once
-        .add_systems(Update, update_tile_visuals);   // Update visuals when tiles change
+    app.add_systems(Startup, setup_tile_resources) // Load 3D models once
+        .add_systems(Update, update_tile_visuals); // Update visuals when tiles change
 }
 
 // ============================================================================
@@ -48,19 +48,19 @@ pub(super) fn plugin(app: &mut App) {
 // ============================================================================
 
 /// Resource containing handles to all tile 3D models
-/// 
+///
 /// 📋 BEST PRACTICE: Centralized asset management
 /// - All models loaded once at startup
 /// - Handles are lightweight references to GPU resources
 /// - Easy to add new tile types by extending this struct
 #[derive(Resource)]
 pub struct TileModels {
-    pub ground: Handle<Scene>,           // Basic ground/road tile
-    pub tree: Handle<Scene>,             // Natural tree decoration
-    pub chest: Handle<Scene>,            // Interactive object (currently rock)
-    pub fountain_center: Handle<Scene>,  // Central fountain piece
-    pub fountain_corner: Handle<Scene>,  // Corner fountain pieces
-    pub fountain_edge: Handle<Scene>,    // Edge fountain pieces
+    pub ground: Handle<Scene>,          // Basic ground/road tile
+    pub tree: Handle<Scene>,            // Natural tree decoration
+    pub chest: Handle<Scene>,           // Interactive object (currently rock)
+    pub fountain_center: Handle<Scene>, // Central fountain piece
+    pub fountain_corner: Handle<Scene>, // Corner fountain pieces
+    pub fountain_edge: Handle<Scene>,   // Edge fountain pieces
 }
 
 // ============================================================================
@@ -69,7 +69,7 @@ pub struct TileModels {
 
 /// 🎯 STARTUP SYSTEM: 3D Model Loading
 /// Loads all tile models from GLTF files at game startup
-/// 
+///
 /// 📋 BEST PRACTICE: Front-load assets for performance
 /// - Load all models once to avoid runtime loading delays
 /// - Use GLTF format for optimized 3D assets
@@ -98,7 +98,7 @@ fn setup_tile_resources(mut commands: Commands, asset_server: Res<AssetServer>) 
 
 /// 🎯 UPDATE SYSTEM: Tile Visual Assignment
 /// Updates the visual representation when cells get assigned tile types
-/// 
+///
 /// 📋 BEST PRACTICE: Change detection for performance
 /// - Only processes cells that have actually changed
 /// - Prevents unnecessary visual updates every frame
@@ -117,11 +117,10 @@ fn update_tile_visuals(
                 // ============================================================
                 // 🌱 BASIC TILES: Ground, Trees, and Objects
                 // ============================================================
-                
                 TileType::Ground => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x, // X position from cell
-                        0.0,                          // Ground level
+                        0.0,                           // Ground level
                         0.0 + transform.translation.z, // Z position from cell
                     ))
                     .with_scale(Vec3 {
@@ -169,13 +168,12 @@ fn update_tile_visuals(
                 // ============================================================
                 // ⛲ FOUNTAIN SYSTEM: Multi-Part Structure
                 // ============================================================
-                
+
                 // 📋 DESIGN NOTE: Fountain tiles form connected structures
                 // - FountainCenter: Central piece (no rotation needed)
                 // - FountainCorner1-4: Corner pieces with different rotations
                 // - FountainEdge1-4: Edge pieces with different rotations
                 // - Rotation values create proper tile alignment
-
                 TileType::FountainCenter => {
                     let transform = Transform::from_translation(Vec3::new(
                         0.0 + transform.translation.x,

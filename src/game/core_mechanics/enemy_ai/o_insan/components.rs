@@ -10,7 +10,6 @@ use bevy::prelude::*;
 pub enum EmotionalState {
     Depressed, // Low health - wants to escape
     Angry,     // High health - aggressive, chases player
-    Sorrow,    // Sees weapon while chasing - begs for mercy
     Neutral,   // Default state - just wanders
 }
 

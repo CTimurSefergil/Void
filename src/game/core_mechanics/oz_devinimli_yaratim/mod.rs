@@ -14,9 +14,9 @@
 
 use bevy::prelude::*;
 
-pub mod cells;              // World data structures and cell management
-pub mod odycore;           // Core generation algorithms and logic
-pub mod odyrules;          // Rule systems for different world types
+pub mod cells; // World data structures and cell management
+pub mod odycore; // Core generation algorithms and logic
+pub mod odyrules; // Rule systems for different world types
 pub mod tiles_meshes_models; // Visual representation and mesh generation
 
 /// 🎯 PROCEDURAL GENERATION PLUGIN: World Creation System
@@ -28,8 +28,8 @@ pub mod tiles_meshes_models; // Visual representation and mesh generation
 /// - odycore: Core logic can reference both data and visuals
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
-        cells::plugin,              // World data management
+        cells::plugin,               // World data management
         tiles_meshes_models::plugin, // Visual mesh generation
-        odycore::plugin,            // Core generation algorithms
+        odycore::plugin,             // Core generation algorithms
     ));
 }

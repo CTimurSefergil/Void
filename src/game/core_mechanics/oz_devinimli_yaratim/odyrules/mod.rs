@@ -13,6 +13,6 @@
 // - Each rule set creates coherent, themed environments
 
 //pub mod building_rules;   // Rules for architectural structures (future)
-pub mod commons;            // Shared tile definitions and utilities
+pub mod commons; // Shared tile definitions and utilities
 //pub mod dungeon_rules;    // Rules for underground/enclosed spaces (future)
-pub mod open_space_rules;   // Rules for outdoor, natural environments
+pub mod open_space_rules; // Rules for outdoor, natural environments

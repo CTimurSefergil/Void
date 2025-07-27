@@ -40,15 +40,15 @@ pub mod open_space; // Open space generation algorithms
 /// - collapse_lowest_entropy_cell: Only when propagation is complete
 /// - Chain ensures systems run in the correct sequence
 pub fn plugin(app: &mut App) {
-    app.init_resource::<OpenSpaceRules>()           // Rule definitions for generation
+    app.init_resource::<OpenSpaceRules>() // Rule definitions for generation
         .init_resource::<OpenSpacePropagationQueue>() // Queue for constraint propagation
-        .add_systems(Startup, setup_wfc_rules)      // Initialize all resources
+        .add_systems(Startup, setup_wfc_rules) // Initialize all resources
         .add_systems(
             Update,
             (
-                update_spatial_index,                // 1. Update cell position tracking
-                initialize_new_cells,               // 2. Initialize new cells with rules
-                propagate_open_space_constraints,    // 3. Apply constraints to reduce entropy
+                update_spatial_index,             // 1. Update cell position tracking
+                initialize_new_cells,             // 2. Initialize new cells with rules
+                propagate_open_space_constraints, // 3. Apply constraints to reduce entropy
                 collapse_lowest_entropy_open_space_cell.run_if(propagation_queue_empty), // 4. Collapse when ready
             )
                 .chain(), // 📋 CRITICAL: Chain ensures proper execution order
@@ -74,7 +74,7 @@ fn propagation_queue_empty(queue: Res<OpenSpacePropagationQueue>) -> bool {
 /// - CellSpatialIndex: Fast spatial lookup for cells
 /// - OpenSpacePropagationQueue: Manages constraint propagation order
 fn setup_wfc_rules(mut commands: Commands) {
-    commands.insert_resource(OpenSpaceRules::default());           // Tile placement rules
-    commands.insert_resource(CellSpatialIndex::default());         // Spatial indexing
+    commands.insert_resource(OpenSpaceRules::default()); // Tile placement rules
+    commands.insert_resource(CellSpatialIndex::default()); // Spatial indexing
     commands.insert_resource(OpenSpacePropagationQueue::default()); // Constraint queue
 }

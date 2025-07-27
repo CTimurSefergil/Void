@@ -27,12 +27,12 @@ use crate::game::{
 // ============================================================================
 
 /// How often to check for new cells to create (in milliseconds)
-/// 
+///
 /// 📋 PERFORMANCE NOTE: Don't update every frame - expensive calculations
 const UPDATE_INTERVAL_MS: u64 = 200;
 
 /// How often to check for cells to remove (in milliseconds)
-/// 
+///
 /// 📋 PERFORMANCE NOTE: Separate interval allows tuning cleanup frequency
 const DESPAWN_INTERVAL_MS: u64 = 200;
 
@@ -41,7 +41,7 @@ const DESPAWN_INTERVAL_MS: u64 = 200;
 // ============================================================================
 
 /// Global settings for world generation behavior
-/// 
+///
 /// 📋 BEST PRACTICE: Centralized configuration
 /// - Easy to tweak world generation parameters
 /// - Consistent values across all generation systems
@@ -50,32 +50,32 @@ const DESPAWN_INTERVAL_MS: u64 = 200;
 pub struct GenerationSettings {
     /// How large each cell is in world units (9x9 area)
     pub cell_edge_length: i32,
-    
+
     /// How many cells to generate around the player (17x17 grid)
     pub total_cells_on_edge: i32,
-    
+
     /// Distance multiplier for when to despawn distant cells
     pub spawn_distance: f32,
 }
 
 impl Default for GenerationSettings {
     /// 🎯 DEFAULT SETTINGS: Balanced Performance Values
-    /// 
+    ///
     /// 📋 BEST PRACTICE: Provide reasonable defaults
     /// - 9x9 cells provide good detail without being too small
     /// - 17x17 grid gives good view distance without performance issues
     /// - 0.7 spawn distance creates smooth loading/unloading
     fn default() -> Self {
         Self {
-            cell_edge_length: 9,      // Medium-sized cells for good detail
-            total_cells_on_edge: 17,  // Good view distance without lag
-            spawn_distance: 0.7,      // Smooth loading/unloading zone
+            cell_edge_length: 9,     // Medium-sized cells for good detail
+            total_cells_on_edge: 17, // Good view distance without lag
+            spawn_distance: 0.7,     // Smooth loading/unloading zone
         }
     }
 }
 
 /// Spatial index for fast cell lookup by grid coordinates
-/// 
+///
 /// 📋 BEST PRACTICE: Spatial indexing for performance
 /// - HashMap provides O(1) lookup by position
 /// - Essential for large worlds with many cells
@@ -87,13 +87,13 @@ pub struct CellSpatialIndex {
 }
 
 /// 🎯 PLUGIN SETUP: Cell System Registration
-/// 
+///
 /// 📋 BEST PRACTICE: Initialize resources and systems together
 /// - Resources provide global state and configuration
 /// - Systems run in chain to ensure proper order (create before destroy)
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<GenerationSettings>()  // World generation settings
-        .init_resource::<CellSpatialIndex>()    // Spatial lookup table
+    app.init_resource::<GenerationSettings>() // World generation settings
+        .init_resource::<CellSpatialIndex>() // Spatial lookup table
         .add_systems(Update, (create_cells, destroy_cells).chain()); // Generation systems
 }
 
@@ -102,7 +102,7 @@ pub(super) fn plugin(app: &mut App) {
 // ============================================================================
 
 /// A single cell in the world generation system
-/// 
+///
 /// 📋 BEST PRACTICE: Wave Function Collapse-inspired data structure
 /// - Each cell starts with all possibilities (high entropy)
 /// - Constraints reduce possibilities (lower entropy)
@@ -112,24 +112,24 @@ pub(super) fn plugin(app: &mut App) {
 pub struct Cell {
     /// Whether this cell has been finalized to a specific tile type
     pub is_collapsed: bool,
-    
+
     /// The final tile type (Some when collapsed, None when still deciding)
     pub tile_type: Option<TileType>,
-    
+
     /// Number of possible tile types (lower = more constrained)
     /// 📋 DESIGN NOTE: Entropy drives the Wave Function Collapse algorithm
     pub entropy: i32,
-    
+
     /// List of tile types that are still possible for this cell
     pub valid_tiles: Vec<TileType>,
-    
+
     /// Grid coordinates of this cell (for spatial relationships)
     pub position: (i32, i32),
 }
 
 impl Cell {
     /// 🎯 CELL CREATION: Initialize with all possibilities
-    /// 
+    ///
     /// 📋 BEST PRACTICE: Start with maximum entropy
     /// - All tile types are initially possible
     /// - Constraints will reduce possibilities over time
@@ -145,7 +145,7 @@ impl Cell {
     }
 
     /// 🎯 ENTROPY UPDATE: Recalculate entropy after constraints
-    /// 
+    ///
     /// 📋 BEST PRACTICE: Keep entropy in sync with valid_tiles
     /// - Entropy should always match valid_tiles.len()
     /// - Only update if cell isn't already collapsed
@@ -157,7 +157,7 @@ impl Cell {
     }
 
     /// 🎯 CONTRADICTION CHECK: Detect impossible cells
-    /// 
+    ///
     /// 📋 BEST PRACTICE: Handle contradiction states
     /// - Empty valid_tiles means no solution possible
     /// - This can happen with conflicting constraints
@@ -168,7 +168,7 @@ impl Cell {
 }
 
 /// Marker component for entities that represent tiles in the world
-/// 
+///
 /// 📋 BEST PRACTICE: Use marker components for querying
 /// - Makes it easy to find all tile entities
 /// - Separates tiles from other world objects
@@ -182,7 +182,7 @@ pub struct Tile;
 
 /// 🎯 SYSTEM 1: CELL CREATION
 /// Creates new cells around the player as they move through the world
-/// 
+///
 /// 📋 BEST PRACTICE: Player-centered infinite world generation
 /// - Only create cells near the player (performance)
 /// - Use timer to prevent expensive every-frame calculations
@@ -259,7 +259,7 @@ fn create_cells(
 
 /// 🎯 SYSTEM 2: CELL DESTRUCTION
 /// Removes cells that are too far from the player to save memory
-/// 
+///
 /// 📋 BEST PRACTICE: Automatic cleanup for infinite worlds
 /// - Remove distant cells to prevent memory leaks
 /// - Use separate timer for cleanup (different frequency than creation)
@@ -296,7 +296,7 @@ fn destroy_cells(
                 transform.translation.x as i32,
                 transform.translation.z as i32,
             ));
-            
+
             // Despawn the entity
             commands.entity(entity).despawn();
         }

@@ -17,7 +17,7 @@ pub fn spawn_o_insan(
     health: f32,
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut material_assets: ResMut<Assets<StandardMaterial>>,
-    asset_server: Res<AssetServer>
+    asset_server: Res<AssetServer>,
 ) -> Entity {
     let _ball_mesh = mesh_assets.add(Cuboid::default());
     let color = Color::srgb(0.8, 0.5, 0.6);
@@ -26,7 +26,8 @@ pub fn spawn_o_insan(
         ..Default::default()
     });
     commands
-        .spawn((SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/monster.glb"))),
+        .spawn((
+            SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/monster.glb"))),
             OInsanAI {
                 health,
                 max_health: health,

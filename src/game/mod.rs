@@ -11,7 +11,7 @@
 // - Core mechanics include movement, AI, and world generation
 
 pub mod core_mechanics; // AI, movement, and world generation systems
-pub mod spawn;          // Entity spawning logic (player, enemies, etc.)
+pub mod spawn; // Entity spawning logic (player, enemies, etc.)
 
 use bevy::prelude::*;
 
