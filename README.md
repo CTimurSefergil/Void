@@ -40,7 +40,7 @@ Rules {
       - Check what tiles are allowed next to this tile type
       - Remove invalid possibilities from neighbor's valid_tiles list
       - Update neighbor's entropy count
-      - If neighbor has no valid tiles left: default to Ground
+      - If neighbor has no valid tiles left: default to Ground(for now)
 
   #### 4. Tile Selection Algorithm
     Find all uncollapsed cells with minimum entropy
@@ -54,8 +54,8 @@ Rules {
       
   #### 5. Visual Rendering
     When cell.tile_type changes:
-      - Load appropriate 3D model (ground.glb, tree.glb, etc.)
-      - Apply correct rotation for fountain pieces
+      - Load appropriate 3D model
+      - Apply correct rotations
       - Scale model to cell size
       - Attach to game entity
 
