@@ -1,7 +1,3 @@
-// ============================================================================
-// 🤖 O_INSAN AI SYSTEM - Module Declaration
-// ============================================================================
-
 use bevy::prelude::*;
 
 use crate::game::core_mechanics::enemy_ai::o_insan::spawn::spawn_o_insan;
@@ -11,45 +7,33 @@ pub mod debug;
 pub mod spawn;
 pub mod systems;
 
-// Re-export the commonly used items
-
-/// The main AI plugin that adds all systems to the game
-///
-/// 📋 BEST PRACTICE: Use plugins to organize systems
-/// - Groups related systems together
-/// - Makes it easy to enable/disable AI
-/// - Follows Bevy's architecture patterns
 pub struct SimpleAIPlugin;
 
 impl Plugin for SimpleAIPlugin {
     fn build(&self, app: &mut App) {
         app
-            // Setup systems (run once at startup)
             .add_systems(Startup, setup_ai_demo)
-            // Main AI systems (run every frame, in order)
             .add_systems(
                 Update,
                 (
-                    systems::ai_emotion_system,  // 1. Calculate emotions
-                    systems::ai_behavior_system, // 2. Decide behavior
-                    systems::ai_movement_system, // 3. Execute movement
-                    systems::ai_speech_system,   // 4. Handle speech
-                    systems::ai_health_system,   // 5. Manage health
-                    debug::ai_debug_system,      // 6. Debug controls
+                    systems::ai_emotion_system,  
+                    systems::ai_behavior_system, 
+                    systems::ai_movement_system, 
+                    systems::ai_speech_system,   
+                    systems::ai_health_system,   
+                    debug::ai_debug_system,      
                 )
                     .chain(),
-            ); // .chain() ensures systems run in the specified order
+            ); 
     }
 }
 
-/// Initial setup - creates AI and player for testing
 fn setup_ai_demo(
     mut commands: Commands,
     mesh_assets: ResMut<Assets<Mesh>>,
     material_assets: ResMut<Assets<StandardMaterial>>,
     asset_server: Res<AssetServer>,
 ) {
-    // Create one AI with full health (will be angry)
     let _ai_entity = spawn_o_insan(
         &mut commands,
         Vec3::new(0.0, 0.0, 0.0),

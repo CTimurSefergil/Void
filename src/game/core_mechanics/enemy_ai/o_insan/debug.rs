@@ -1,24 +1,12 @@
-// ============================================================================
-// 🛠️ DEBUG SYSTEM - Development Tools
-// ============================================================================
-
 use super::components::OInsanAI;
 use crate::game::spawn::player::Player;
 use bevy::prelude::*;
 
-/// 🎯 SYSTEM 6: DEBUG SYSTEM
-/// This provides testing controls for development
-///
-/// 📋 BEST PRACTICE: Always include debug tools
-/// - Debug systems help you test different scenarios
-/// - Use keyboard inputs for quick testing
-/// - Remove or disable in release builds
 pub fn ai_debug_system(
     mut ai_query: Query<&mut OInsanAI>,
     mut player_query: Query<&mut Player>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
-    // Damage AI (reduce health)
     if keyboard_input.just_pressed(KeyCode::Digit1) {
         for mut ai in ai_query.iter_mut() {
             ai.health -= 20.0;
@@ -30,7 +18,6 @@ pub fn ai_debug_system(
         }
     }
 
-    // Heal AI (restore health)
     if keyboard_input.just_pressed(KeyCode::Digit2) {
         for mut ai in ai_query.iter_mut() {
             ai.health += 20.0;
@@ -42,7 +29,6 @@ pub fn ai_debug_system(
         }
     }
 
-    // Toggle player weapon
     if keyboard_input.just_pressed(KeyCode::Digit3) {
         for mut player in player_query.iter_mut() {
             player.has_weapon = !player.has_weapon;
@@ -53,7 +39,6 @@ pub fn ai_debug_system(
         }
     }
 
-    // Print current AI state
     if keyboard_input.just_pressed(KeyCode::Digit4) {
         for ai in ai_query.iter() {
             println!("📊 AI STATE:");

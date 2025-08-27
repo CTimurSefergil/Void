@@ -1,16 +1,6 @@
-// ============================================================================
-// 🏭 SECTION 6: FACTORY FUNCTIONS (Creating Entities)
-// ============================================================================
-
 use super::components::OInsanAI;
 use bevy::prelude::*;
 
-/// Creates a new AI entity with all necessary components
-///
-/// 📋 BEST PRACTICE: Use factory functions
-/// - Centralizes entity creation
-/// - Ensures all required components are added
-/// - Makes it easy to create multiple AIs with different settings
 pub fn spawn_o_insan(
     commands: &mut Commands,
     position: Vec3,
